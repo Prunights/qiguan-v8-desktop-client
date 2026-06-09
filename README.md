@@ -1,79 +1,149 @@
-# 🔧 主板故障诊断卡桌面客户端
+# 🔧 奇冠 V8 主板诊断卡桌面客户端
 
 <div align="center">
 
-![Platform](https://img.shields.io/badge/platform-Windows-blue)
+## 🛠️ 技术栈 / Tech Stack
+
 ![Electron](https://img.shields.io/badge/Electron-25.9.8-brightgreen)
-![License](https://img.shields.io/badge/license-MIT-green)
-![Status](https://img.shields.io/badge/status-stable-orange)
-
-### 🛠️ 技术栈 / Tech Stack
-
-![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)
-![CSS3](https://img.shields.io/badge/CSS3-1572B6?logo=css3&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)
 ![Node.js](https://img.shields.io/badge/Node.js-339933?logo=nodedotjs&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?logo=css3&logoColor=white)
 
-**奇冠 V8 主板诊断卡的非官方桌面客户端 | 技能大赛参赛作品**
+**基于 Electron 重构的奇冠 V8 非官方桌面客户端**
+
+实现蓝牙串口通信、POST 故障码解析与 AI 辅助维修分析。
+
+**技能大赛参赛作品｜非官方客户端｜MIT License**
 
 </div>
 
-## 📖 项目背景
+---
 
-这个项目的诞生源于一次技能大赛。比赛中需要使用一款**奇冠 V8** 品牌的主板诊断卡，但这张卡有几个问题：
+## 🚀 为什么做这个项目？
 
-- 🔌 硬件做工粗糙，裸露主板，连外壳都没有
-- 📱 配套的手机 APP 还是 Android 4/5 时代的产物
-- 🎨 UI 和交互逻辑极其简陋
-- 💰 价格还不便宜（大几百块）
+在计算机维修、技能竞赛以及主板故障排查场景中，POST 诊断卡仍然是一种常见工具。
 
-比赛需要用到诊断卡的**诊断码读取功能**，但原厂软件的体验实在让人无法接受。于是我在比赛期间逆向分析了诊断卡的通信协议，用 Electron 重构了一个桌面客户端。
+比赛中指定使用**奇冠 V8 蓝牙主板诊断卡**，但其原厂软件存在许多问题：
+
+- 📱 仅提供老旧 Android 客户端
+- 🎨 UI 与交互体验较差
+- 📚 故障码查询效率低
+- 🧠 缺乏故障分析能力
+- 🔌 扩展性较弱
+
+因此，本项目对奇冠 V8 进行了**协议分析与桌面化重构**，实现：
+
+- 💻 Windows 原生桌面体验
+- 📊 实时 POST 诊断码读取
+- 📖 故障知识库整合
+- 🤖 AI 辅助分析与维修建议
+
 <img width="1919" height="1052" alt="image" src="https://github.com/user-attachments/assets/e94f861f-eba3-4e81-9b04-4f5336610556" />
+
 <img width="1915" height="1051" alt="image" src="https://github.com/user-attachments/assets/b0c1c6ce-49e7-416b-91f8-31104dd150a0" />
 
-> ⚠️ **重要说明**：本项目是**非官方**客户端，需要配合**奇冠 V8 蓝牙主板诊断卡**硬件使用。如果您没有这张卡，程序可以运行但无法进行实际诊断（会显示模拟数据）。
+> ⚠️ 本项目为**非官方客户端**，需要配合**奇冠 V8 蓝牙主板诊断卡**硬件使用。
 
-## 🎯 项目做了什么
+---
 
-| 原厂软件问题 | 本项目的改进 |
-|-------------|-------------|
+## ⭐ 项目亮点
+
+### 🔌 协议分析与设备适配
+
+针对奇冠 V8 蓝牙诊断卡实现通信支持：
+
+- 🔍 自动扫描蓝牙虚拟串口
+- 🔗 自动识别设备并建立稳定连接
+- 📡 实时获取 POST 诊断码
+
+### 📚 故障码知识库
+
+内置 **1000+ 条故障码数据库**：
+
+- 📊 POST 码解析
+- 📝 故障原因说明
+- 🇨🇳 中文化查询
+- 🛠️ 常见维修建议
+
+### 🤖 AI 辅助维修
+
+在传统诊断基础上增加：
+
+- 🧠 AI 故障分析
+- 💬 多模态问答
+- 🖼️ 图片识别
+- 📋 维修建议生成
+
+### 🎬 AI 维修指导视频（实验功能）
+
+结合以下信息自动生成维修指导视频：
+
+- 🔍 故障诊断结果
+- 📐 主板原理图
+- 📍 点位图信息
+
+**目标**：
+
+- 🎯 快速定位故障区域
+- 📉 降低学习成本
+- ⚡ 提高维修效率
+
+> 当前功能主要用于**技能竞赛展示与方案验证**。
+
+---
+
+## 🎯 本项目解决了什么？
+
+| 原厂软件 | 本项目 |
+|----------|--------|
 | Android 4/5 老应用 | Windows 桌面客户端 |
-| 界面老旧丑陋 | 现代化 UI + 深色主题 |
-| 功能单一 | 添加 AI 分析、对话、视频生成 |
-| 无扩展性 | 支持配置大模型 API |
-| 蓝牙连接不稳定 | 重构连接逻辑 |
+| 界面老旧 | 现代化 UI |
+| 功能单一 | AI 辅助分析 |
+| 无扩展能力 | 支持大模型 API |
+| 蓝牙连接体验一般 | 重构连接逻辑 |
+
+---
 
 ## ✨ 功能特点
 
-### 核心功能（逆向还原）
-- 🔌 **蓝牙串口连接** - 连接奇冠 V8 诊断卡，读取故障码
-- 📊 **实时诊断** - 显示 POST 诊断码及含义
-- 🩺 **故障码解析** - 内置 1000+ 故障码数据库
+### 核心功能
 
-### 新增功能（本项目的价值）
-- 🤖 **AI 诊断分析** - 连接大模型 API，生成诊断报告
-- 💬 **智能对话** - 多模态对话，可上传图片识别
-- 🎬 **视频生成** - 接入豆包 API 的图生视频功能
-- 🎨 **深色/浅色主题** - 一键切换
+- 🔌 蓝牙串口连接
+- 📊 实时 POST 诊断
+- 🩺 故障码解析
+- 📚 故障知识库
+
+### 扩展功能
+
+- 🤖 AI 故障分析
+- 💬 智能对话
+- 🖼️ 图片识别
+- 🎬 视频生成
+- 🎨 深色主题
+
+---
 
 ## 🔧 硬件要求
 
 | 硬件 | 说明 |
 |------|------|
-| **奇冠 V8 蓝牙主板诊断卡** | 必需，本项目仅对此卡适配 |
-| 待检测主板 | 需有 PCI 或 USB 接口 |
-| 蓝牙适配器 | 电脑需支持蓝牙 |
+| 奇冠 V8 蓝牙主板诊断卡 | **必需** |
+| 待检测主板 | PCI 或 USB 接口 |
+| 蓝牙适配器 | **必需** |
+
+---
 
 ## 🚀 快速开始
 
-### 方式一：下载安装包（推荐普通用户）
+### 方式一：下载安装包（推荐）
 
 1. 前往 [Releases](https://github.com/Prunights/computer-diagnostic-platform/releases) 页面
 2. 下载最新版本安装程序
 3. 安装后运行，连接诊断卡即可使用
 
-### 方式二：从源码构建（推荐开发者）
+### 方式二：从源码构建
 
 ```bash
 # 克隆项目
@@ -88,7 +158,6 @@ npm start
 
 # 打包成可执行文件
 npm run pack
-
 ```
 
 ## 🛠️ 构建指南
@@ -163,6 +232,7 @@ computer-diagnostic-platform/
 - 前端界面、样式、动画效果由 AI 生成并调整
 - AI 功能集成（豆包 API、DeepSeek 等）由 AI 辅助完成
 - 故障码数据库（faultCodes.js）为手动整理
+  之所以这样做，是因为比赛时间紧迫，AI 辅助大幅提升了开发效率。
   
 ## ❓ 常见问题
 
@@ -235,6 +305,8 @@ Electron - 跨平台桌面框架
 SerialPort - 串口通信库
 
 豆包大模型 - AI 能力支持
+
+DeepSeek  - AI 能力支持
 
 Font Awesome - 图标库
 
