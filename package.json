@@ -1,0 +1,47 @@
+{
+  "name": "electron-serial",
+  "version": "1.0.0",
+  "description": "智能计算机主板故障诊断平台",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder"
+  },
+  "author": "八桂数维团队",
+  "license": "ISC",
+  "dependencies": {
+    "electron-store": "^8.1.0",
+    "iconv-lite": "^0.7.2",
+    "node-fetch": "^2.7.0",
+    "serialport": "^10.5.0"
+  },
+  "devDependencies": {
+    "electron": "^25.9.8",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.bagui.electron-serial",
+    "productName": "主板故障诊断平台",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "main.js",
+      "index.html",
+      "preload.js",
+      "faultCodes.js",
+      "node_modules/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "resources/icon_fixed.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "主板故障诊断平台"
+    }
+  }
+}

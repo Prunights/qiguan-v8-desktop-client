@@ -1,0 +1,2873 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智能计算机主板故障诊断平台</title>
+  <!-- Font Awesome 6 免费图标库 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    /* ---------- 全局重置 + CSS变量 (英特尔风格) ---------- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Microsoft YaHei", "Segoe UI", "Inter", system-ui, sans-serif;
+    }
+
+    /* 深色主题变量 - 英特尔风格 */
+    :root {
+      --bg-primary: #0C0C0C;
+      --bg-secondary: #1A1A1A;
+      --panel-bg: #1E1E1E;
+      --panel-border: #2C2C2C;
+      --text-primary: #FFFFFF;
+      --text-secondary: #CCCCCC;
+      --text-muted: #8C8C8C;
+      --log-left-border: #0066CC;
+      --log-bg: #1A1A1A;
+      --log-column-bg: #1A1A1A;
+      --card-bg: #1E1E1E;
+      --btn-connect: #0066CC;
+      --btn-detect: #1E7A5C;
+      --btn-disconnect: #B33A3A;
+      --btn-ai: #6B4E8A;
+      --btn-cancel: #5A5A5A;
+      --progress-bar-bg: #2A2A2A;
+      --footer-bg: #1A1A1A;
+      --scroll-thumb: #3A3A3A;
+      --scroll-track: #1A1A1A;
+      --shadow-color: rgba(0,0,0,0.8);
+      --transition-smooth: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      --transition-theme: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+      --transition-expand: all 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.1);
+      
+      /* 日志消息专用颜色 - 深色模式高对比 */
+      --log-success-bg: rgba(30, 122, 92, 0.25);
+      --log-success-text: #A3D8C0;
+      --log-error-bg: rgba(179, 58, 58, 0.25);
+      --log-error-text: #FFB5B5;
+      --log-warning-bg: rgba(181, 124, 46, 0.25);
+      --log-warning-text: #FFD966;
+      --log-info-bg: rgba(0, 102, 204, 0.15);
+      --log-info-text: #CCCCCC;
+      --log-conclusion-bg: linear-gradient(115deg, #1A2A3A, #1E1E1E);
+      --log-conclusion-text: #FFFFFF;
+      
+      /* AI分析结果文字颜色 */
+      --ai-analysis-text: #E0F0FF;
+      --ai-analysis-bg: #1A1A1A;
+      
+      /* 详细日志文字颜色 */
+      --detail-log-text: #CCCCCC;
+      --detail-log-bg: #1A1A1A;
+      
+      /* 聊天区域样式 */
+      --chat-user-bg: #0066CC;
+      --chat-ai-bg: #2A2A2A;
+      --chat-timestamp: #888888;
+      
+      /* AI功能专用颜色 */
+      --doubao-accent: #9B59B6;
+      --doubao-accent-light: #AE7AC9;
+      --doubao-video-accent: #E67E22;
+    }
+
+    /* 亮色主题变量 (为保留切换功能) */
+    body.light-mode {
+      --bg-primary: #F5F5F5;
+      --bg-secondary: #EAEAEA;
+      --panel-bg: #FFFFFF;
+      --panel-border: #DDDDDD;
+      --text-primary: #111111;
+      --text-secondary: #333333;
+      --text-muted: #666666;
+      --log-left-border: #0077CC;
+      --log-bg: #F0F0F0;
+      --log-column-bg: #FFFFFF;
+      --card-bg: #FFFFFF;
+      --btn-connect: #0077CC;
+      --btn-detect: #2E7D5E;
+      --btn-disconnect: #B14545;
+      --btn-ai: #7B5FA0;
+      --btn-cancel: #9A9A9A;
+      --progress-bar-bg: #DDDDDD;
+      --footer-bg: #F0F0F0;
+      --scroll-thumb: #B0B0B0;
+      --scroll-track: #E0E0E0;
+      --shadow-color: rgba(0,0,0,0.1);
+      --transition-smooth: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      --transition-theme: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+      --transition-expand: all 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.1);
+      
+      --log-success-bg: #E6F7F0;
+      --log-success-text: #1B5E3F;
+      --log-error-bg: #FFE6E6;
+      --log-error-text: #8B2C2C;
+      --log-warning-bg: #FFF0E0;
+      --log-warning-text: #8F5E1A;
+      --log-info-bg: #E6F0FF;
+      --log-info-text: #1E5B85;
+      --log-conclusion-bg: linear-gradient(115deg, #F0F7FD, #FFFFFF);
+      --log-conclusion-text: #0B2F40;
+      
+      --ai-analysis-text: #1F4A64;
+      --ai-analysis-bg: rgba(255,255,255,0.9);
+      --detail-log-text: #1E5B85;
+      --detail-log-bg: rgba(255,255,255,0.9);
+      
+      --chat-user-bg: #0077CC;
+      --chat-ai-bg: #E0E0E0;
+      --chat-timestamp: #888888;
+      
+      --doubao-accent: #8E44AD;
+      --doubao-accent-light: #A569BD;
+      --doubao-video-accent: #D35400;
+    }
+
+    body {
+      background: var(--bg-primary);
+      padding: 10px 20px;
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: var(--transition-theme);
+    }
+
+    body::before {
+      display: none;
+    }
+
+    .container {
+      max-width: 1600px;
+      width: 100%;
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* 英特尔风格顶部工具条 */
+    .top-bar {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--panel-border);
+      padding: 8px 20px;
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 20px;
+      border-radius: 4px;
+      transition: var(--transition-theme);
+    }
+    .top-bar-left {
+      display: flex;
+      gap: 30px;
+      color: var(--text-muted);
+    }
+    .top-bar-right {
+      display: flex;
+      gap: 20px;
+      color: var(--text-muted);
+    }
+
+    /* ---------- 头部 ---------- */
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--panel-border);
+      animation: fadeInDown 0.6s ease-out;
+      transition: var(--transition-theme);
+    }
+
+    .title-section h1 {
+      color: var(--text-primary);
+      font-size: 60px;
+      font-weight: 500;
+      margin-bottom: 5px;
+      letter-spacing: -0.5px;
+      background: none;
+      -webkit-text-fill-color: var(--text-primary);
+      filter: none;
+      line-height: 1.2;
+      transition: var(--transition-theme);
+    }
+
+    .title-section p {
+      color: var(--text-muted);
+      font-size: 28px;
+      font-weight: 400;
+      background: transparent;
+      backdrop-filter: none;
+      display: inline-block;
+      padding: 0;
+      border-radius: 0;
+      box-shadow: none;
+      border: none;
+      transition: var(--transition-theme);
+    }
+
+    .team-info {
+      background: var(--card-bg);
+      color: var(--text-primary);
+      padding: 10px 28px;
+      border-radius: 4px;
+      font-size: 40px;
+      font-weight: 500;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      border: 1px solid var(--panel-border);
+      letter-spacing: 1px;
+      transition: var(--transition-theme);
+    }
+
+    /* 内容容器 */
+    .content-container {
+      position: relative;
+      min-height: 650px;
+      margin-top: 5px;
+      margin-bottom: 15px;
+      flex: 1;
+    }
+
+    .content-panel {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+      padding: 30px 40px;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease, visibility 0.2s ease, var(--transition-theme);
+      pointer-events: none;
+      max-height: 750px;
+      overflow-y: auto;
+    }
+
+    .content-panel.active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: all;
+    }
+
+    /* ===== 悬浮控制面板 ===== */
+    .control-panel-container {
+      position: fixed;
+      left: 30px;
+      top: 140px;
+      z-index: 1000;
+      filter: drop-shadow(0 8px 20px rgba(0,0,0,0.5));
+    }
+
+    .control-panel-button {
+      width: 70px;
+      height: 70px;
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition-expand);
+      color: var(--text-primary);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      position: relative;
+      z-index: 1002;
+    }
+
+    .control-panel-button i {
+      font-size: 36px;
+      transition: transform 0.2s ease;
+    }
+
+    .control-panel-button:hover {
+      border-color: #0066CC;
+      transform: scale(1.02);
+    }
+
+    .control-panel-button:hover i {
+      transform: scale(1.1);
+    }
+
+    .control-panel-button:active {
+      transform: scale(0.98);
+    }
+
+    .control-panel-expanded {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 380px;
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.6);
+      opacity: 0;
+      visibility: hidden;
+      transform-origin: top left;
+      transform: scale(0.8);
+      transition: var(--transition-expand);
+      pointer-events: none;
+      z-index: 1001;
+      overflow: hidden;
+    }
+
+    .control-panel-container.expanded .control-panel-button {
+      opacity: 0;
+      visibility: hidden;
+      transform: scale(0.8);
+      pointer-events: none;
+    }
+
+    .control-panel-container.expanded .control-panel-expanded {
+      opacity: 1;
+      visibility: visible;
+      transform: scale(1);
+      pointer-events: auto;
+    }
+
+    .control-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--panel-border);
+      background: var(--bg-secondary);
+    }
+
+    .control-panel-header span {
+      font-size: 26px;
+      font-weight: 500;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .control-panel-header span i {
+      color: #0066CC;
+      font-size: 28px;
+    }
+
+    .close-panel-btn {
+      width: 44px;
+      height: 44px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 28px;
+      cursor: pointer;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .close-panel-btn:hover {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      transform: rotate(90deg);
+    }
+
+    .control-panel-content {
+      padding: 22px 25px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* 端口选择与按钮样式 */
+    .port-select {
+      padding: 12px 32px 12px 16px;
+      border: 1px solid var(--panel-border);
+      border-radius: 4px;
+      width: 100%;
+      font-size: 22px;
+      outline: none;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      transition: all 0.2s ease, var(--transition-theme);
+      box-shadow: none;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23888888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 18px;
+      cursor: pointer;
+    }
+
+    .port-select:focus {
+      border-color: #0066CC;
+    }
+
+    .btn {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 4px;
+      font-size: 22px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease, var(--transition-theme);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border: 1px solid var(--panel-border);
+      white-space: nowrap;
+      width: 100%;
+    }
+
+    .btn i {
+      font-size: 22px;
+      transition: transform 0.2s ease;
+    }
+
+    .btn:hover:not(:disabled) i {
+      transform: scale(1.1);
+    }
+
+    .btn:hover:not(:disabled) {
+      background: var(--bg-primary);
+      border-color: #0066CC;
+      transform: translateY(-1px);
+    }
+
+    .btn:active:not(:disabled) {
+      transform: translateY(1px);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-connect {
+      background: #0066CC;
+      border-color: #0066CC;
+      color: white;
+    }
+    .btn-connect i { color: white; }
+    .btn-connect:hover:not(:disabled) { background: #0077ED; }
+
+    .btn-detect {
+      background: #1E7A5C;
+      border-color: #1E7A5C;
+      color: white;
+    }
+    .btn-detect i { color: white; }
+    .btn-detect:hover:not(:disabled) { background: #2A9D78; }
+
+    .btn-disconnect {
+      background: #B33A3A;
+      border-color: #B33A3A;
+      color: white;
+    }
+    .btn-disconnect i { color: white; }
+    .btn-disconnect:hover:not(:disabled) { background: #CC4444; }
+
+    .btn-ai {
+      background: #6B4E8A;
+      border-color: #6B4E8A;
+      color: white;
+    }
+    .btn-ai i { color: white; }
+    .btn-ai:hover:not(:disabled) { background: #8367A3; }
+
+    .btn-cancel {
+      background: #5A5A5A;
+      border-color: #5A5A5A;
+      color: white;
+    }
+    .btn-cancel i { color: white; }
+    .btn-cancel:hover:not(:disabled) { background: #6A6A6A; }
+
+    .button-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      width: 100%;
+    }
+    .button-row .btn {
+      font-size: 20px;
+      padding: 10px 8px;
+      margin: 0;
+      box-sizing: border-box;
+    }
+
+    /* ========== 进度条样式 ========== */
+    .progress-container {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      background: transparent;
+      backdrop-filter: none;
+      padding: 0;
+      border-radius: 0;
+      margin-bottom: 20px;
+      box-shadow: none;
+    }
+
+    .progress-label-left {
+      font-size: 24px;
+      font-weight: 400;
+      color: var(--text-muted);
+      white-space: nowrap;
+      transition: var(--transition-theme);
+    }
+
+    .progress-bar-wrapper {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .progress-bar-bg {
+      height: 8px;
+      background: var(--progress-bar-bg);
+      border-radius: 0;
+      overflow: hidden;
+      position: relative;
+      transition: var(--transition-theme);
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: #0066CC;
+      border-radius: 0;
+      position: relative;
+      overflow: hidden;
+      transition: width 0.1s linear, background 0.5s ease;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .progress-percent {
+      font-size: 24px;
+      font-weight: 500;
+      color: #0066CC;
+      margin-left: 10px;
+      white-space: nowrap;
+      transition: var(--transition-theme);
+    }
+
+    /* ========== 主日志区域 ========== */
+    .main-log-container {
+      flex: 1;
+      background: transparent;
+      border-radius: 0;
+      box-shadow: none;
+      padding: 0;
+      border: none;
+      height: 580px;
+      max-height: 580px;
+      min-height: 580px;
+    }
+
+    .log-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      height: 100%;
+    }
+
+    .log-column {
+      background: var(--log-column-bg);
+      border-radius: 4px;
+      padding: 20px;
+      overflow-y: auto;
+      height: 100%;
+      border-left: 4px solid #0066CC;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+      transition: var(--transition-theme);
+    }
+
+    .log-column h3 {
+      color: var(--text-primary);
+      font-size: 32px;
+      margin: -20px -20px 15px -20px;
+      padding: 15px 20px 10px 20px;
+      border-bottom: 1px solid var(--panel-border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 500;
+      position: sticky;
+      top: -20px;
+      background: var(--log-column-bg);
+      z-index: 5;
+      border-radius: 4px 4px 0 0;
+      transition: var(--transition-theme);
+    }
+
+    .log-column h3 i {
+      color: #0066CC;
+      font-size: 28px;
+      transition: var(--transition-theme);
+    }
+
+    /* 日志消息动画效果 */
+    @keyframes logMessageIn {
+      0% {
+        opacity: 0;
+        transform: translateX(-20px) scale(0.95);
+        filter: blur(4px);
+      }
+      50% {
+        opacity: 0.8;
+        transform: translateX(5px) scale(1.02);
+        filter: blur(0);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+        filter: blur(0);
+      }
+    }
+
+    @keyframes logMessageOut {
+      0% {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+        filter: blur(0);
+        max-height: 100px;
+        margin: 6px 0;
+        padding: 6px 12px;
+      }
+      50% {
+        opacity: 0;
+        transform: translateX(20px) scale(0.9);
+        filter: blur(4px);
+        max-height: 100px;
+        margin: 6px 0;
+        padding: 6px 12px;
+      }
+      100% {
+        opacity: 0;
+        transform: translateX(40px) scale(0.8);
+        filter: blur(8px);
+        max-height: 0;
+        margin: 0;
+        padding: 0 12px;
+      }
+    }
+
+    .log-column p {
+      margin: 8px 0;
+      line-height: 1.5;
+      font-size: 30px !important;
+      padding: 10px 16px !important;
+      border-radius: 4px;
+      transition: all 0.1s, var(--transition-theme);
+      word-break: break-word;
+      font-weight: 400;
+      animation: logMessageIn 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.1) forwards;
+      transform-origin: left center;
+      position: relative;
+      border-left: 4px solid transparent;
+      color: var(--text-secondary);
+    }
+
+    .log-column p.removing {
+      animation: logMessageOut 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+      pointer-events: none;
+    }
+
+    .log-column p:hover {
+      background: rgba(255,255,255,0.05);
+      transform: translateX(4px) scale(1.01);
+    }
+
+    .log-column p.success { 
+      background: var(--log-success-bg);
+      color: var(--log-success-text);
+      border-left-color: #1E7A5C;
+    }
+    .log-column p.error { 
+      background: var(--log-error-bg);
+      color: var(--log-error-text);
+      border-left-color: #B33A3A;
+    }
+    .log-column p.warning { 
+      background: var(--log-warning-bg);
+      color: var(--log-warning-text);
+      border-left-color: #B57C2E;
+    }
+    .log-column p.info { 
+      background: var(--log-info-bg);
+      color: var(--log-info-text);
+      border-left-color: #0066CC;
+    }
+    .log-column p.conclusion {
+      color: var(--log-conclusion-text);
+      font-size: 56px !important;
+      font-weight: 600;
+      margin: 12px 0;
+      padding: 14px 22px !important;
+      background: var(--log-conclusion-bg);
+      border-radius: 4px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      border: 1px solid var(--panel-border);
+      border-left: 4px solid #6B4E8A;
+      transition: var(--transition-theme);
+    }
+
+    /* 其他面板样式 */
+    .content-panel h2 {
+      color: var(--text-primary);
+      font-size: 42px;
+      margin-bottom: 25px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--panel-border);
+      padding-bottom: 15px;
+      transition: var(--transition-theme);
+    }
+
+    .content-panel h2 i {
+      color: #0066CC;
+      font-size: 38px;
+      transition: var(--transition-theme);
+    }
+
+    .content-panel h3 {
+      color: var(--text-primary);
+      font-size: 28px;
+      margin: 20px 0 12px;
+      font-weight: 500;
+      transition: var(--transition-theme);
+    }
+
+    .content-panel p, .content-panel li {
+      color: var(--text-secondary);
+      font-size: 20px;
+      line-height: 1.8;
+      transition: var(--transition-theme);
+    }
+
+    .content-panel ul {
+      margin: 10px 0 20px 35px;
+    }
+
+    .product-card {
+      display: flex;
+      gap: 35px;
+      background: var(--bg-secondary);
+      border-radius: 8px;
+      padding: 30px;
+      margin: 30px 0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      border: 1px solid var(--panel-border);
+      transition: var(--transition-theme);
+    }
+
+    .product-img {
+      flex: 0 0 280px;
+      height: 280px;
+      background: var(--card-bg);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-primary);
+      font-size: 24px;
+      font-weight: 500;
+      border: 1px solid var(--panel-border);
+      transition: var(--transition-theme);
+    }
+
+    .product-price {
+      font-size: 48px;
+      font-weight: 600;
+      color: #0066CC;
+      margin: 15px 0;
+      transition: var(--transition-theme);
+    }
+
+    .product-btn {
+      padding: 16px 40px;
+      background: #0066CC;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 22px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-top: 10px;
+    }
+
+    .product-btn:hover {
+      background: #0077ED;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,102,204,0.3);
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin: 25px 0;
+    }
+
+    .feature-item {
+      background: var(--bg-secondary);
+      padding: 24px;
+      border-radius: 4px;
+      border-left: 4px solid #0066CC;
+      transition: var(--transition-theme);
+    }
+
+    .feature-item h3 {
+      font-size: 26px;
+      margin-top: 0;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .feature-item h3 i {
+      color: #0066CC;
+      transition: var(--transition-theme);
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 15px;
+      color: var(--text-muted);
+      font-size: 18px;
+      font-weight: 400;
+      padding: 10px 20px;
+      border-radius: 4px;
+      background: var(--footer-bg);
+      width: 100%;
+      max-width: 1600px;
+      margin-left: auto;
+      margin-right: auto;
+      border: 1px solid var(--panel-border);
+      position: relative;
+      z-index: 2;
+      transition: var(--transition-theme);
+    }
+
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--scroll-track); border-radius: 0; transition: var(--transition-theme); }
+    ::-webkit-scrollbar-thumb { background: var(--scroll-thumb); border-radius: 0; transition: var(--transition-theme); }
+    ::-webkit-scrollbar-thumb:hover { background: #555; }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .pulse {
+      animation: pulse 1.2s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    /* 右下角悬浮圆形日志 */
+    .float-log-container {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      z-index: 2000;
+      width: 70px;
+      height: 70px;
+      border-radius: 4px;
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+      cursor: pointer;
+      transition: var(--transition-expand);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .float-log-container .circle-icon {
+      font-size: 34px;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      transition: opacity 0.2s ease;
+    }
+
+    .float-log-container.expanded {
+      width: 400px;
+      height: 500px;
+      border-radius: 8px;
+      background: var(--panel-bg);
+      cursor: default;
+      padding: 0;
+      align-items: flex-start;
+      overflow: visible;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.6);
+    }
+
+    .float-log-container .log-card-content {
+      display: none;
+      width: 100%;
+      height: 100%;
+      flex-direction: column;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .expanded .log-card-content {
+      display: flex;
+      opacity: 1;
+    }
+
+    .expanded .circle-icon {
+      display: none;
+    }
+
+    .log-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 22px 10px 22px;
+      font-size: 26px;
+      font-weight: 500;
+      color: var(--text-primary);
+      border-bottom: 1px solid var(--panel-border);
+      width: 100%;
+      transition: var(--transition-theme);
+    }
+
+    .log-card-header .close-log-btn {
+      background: none;
+      border: none;
+      font-size: 28px;
+      cursor: pointer;
+      color: var(--text-muted);
+      width: 44px;
+      height: 44px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+    .log-card-header .close-log-btn:hover {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      transform: rotate(90deg);
+    }
+
+    .log-card-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 20px;
+      font-size: 15px;
+      line-height: 1.6;
+      background: var(--panel-bg);
+      width: 100%;
+      transition: var(--transition-theme);
+    }
+
+    #float-detail-log p {
+      margin: 8px 0;
+      padding: 8px 14px;
+      background: var(--bg-secondary);
+      border-radius: 4px;
+      border-left: 4px solid #0066CC;
+      font-size: 20px !important;
+      word-break: break-word;
+      animation: logMessageIn 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.1) forwards;
+      color: var(--detail-log-text);
+      font-weight: 400;
+      box-shadow: none;
+      transition: var(--transition-theme);
+    }
+
+    #float-detail-log p.removing {
+      animation: logMessageOut 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    /* 右侧悬浮伸缩菜单 */
+    .right-menu-toggle {
+      position: fixed;
+      right: 20px;
+      top: 180px;
+      width: 56px;
+      height: 56px;
+      border-radius: 4px;
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+      font-size: 28px;
+      font-weight: 400;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease, var(--transition-theme);
+      color: var(--text-primary);
+      z-index: 2100;
+      user-select: none;
+    }
+    .right-menu-toggle:hover {
+      border-color: #0066CC;
+      transform: scale(1.05);
+    }
+    .right-menu-toggle:active {
+      transform: scale(0.95);
+    }
+
+    .right-menu-panel {
+      position: fixed;
+      right: 90px;
+      top: 180px;
+      width: 260px;
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+      padding: 12px;
+      z-index: 2099;
+      display: flex;               
+      flex-direction: column;
+      gap: 8px;
+      opacity: 0;
+      transform: translateX(10px);
+      visibility: hidden;
+      transition: opacity 0.2s ease, 
+                  transform 0.2s ease,
+                  visibility 0.2s ease,
+                  var(--transition-theme);
+      pointer-events: none;
+    }
+    .right-menu-panel.show {
+      opacity: 1;
+      transform: translateX(0);
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .vertical-menu-btn {
+      padding: 12px 18px;
+      border: none;
+      border-radius: 4px;
+      font-size: 22px;
+      font-weight: 400;
+      cursor: pointer;
+      transition: all 0.2s ease, var(--transition-theme);
+      background: transparent;
+      color: var(--text-secondary);
+      text-align: left;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .vertical-menu-btn i {
+      width: 24px;
+      color: var(--text-muted);
+      transition: var(--transition-theme);
+    }
+    .vertical-menu-btn:hover {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      transform: translateX(4px);
+    }
+    .vertical-menu-btn.active {
+      background: var(--bg-secondary);
+      color: #0066CC;
+      border-left: 4px solid #0066CC;
+    }
+    .vertical-menu-btn.active i {
+      color: #0066CC;
+    }
+
+    /* AI 特定样式 */
+    .ai-badge {
+      background: #6B4E8A;
+      color: white;
+      padding: 6px 20px;
+      border-radius: 4px;
+      font-size: 24px;
+      font-weight: 500;
+      display: inline-block;
+      margin-left: 20px;
+      vertical-align: middle;
+      transition: var(--transition-theme);
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 56px;
+      height: 28px;
+    }
+    
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--panel-border);
+      transition: all 0.2s ease, var(--transition-theme);
+      border-radius: 0;
+    }
+    
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 22px;
+      width: 22px;
+      left: 2px;
+      bottom: 2px;
+      background-color: var(--text-muted);
+      transition: transform 0.2s ease, background-color 0.2s ease, var(--transition-theme);
+    }
+    
+    input:checked + .slider {
+      background-color: #0066CC;
+      border-color: #0066CC;
+    }
+    
+    input:checked + .slider:before {
+      background-color: white;
+      transform: translateX(28px);
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .ai-action-bar {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      justify-content: flex-end;
+      margin-top: 0;
+    }
+
+    #ai-analysis-result {
+      background: var(--bg-secondary) !important;
+      color: var(--ai-analysis-text) !important;
+      border-radius: 4px;
+      padding: 35px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      border: 1px solid var(--panel-border);
+      min-height: 500px;
+      overflow-y: auto;
+      max-height: 650px;
+      white-space: pre-wrap;
+      font-size: 28px !important;
+      line-height: 1.8;
+      font-weight: 400;
+      margin-top: 20px;
+      transition: var(--transition-theme);
+    }
+
+    /* 深色模式切换按钮 */
+    .theme-toggle {
+      position: fixed;
+      bottom: 30px;
+      left: 30px;
+      width: 70px;
+      height: 70px;
+      border-radius: 4px;
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 38px;
+      cursor: pointer;
+      z-index: 3000;
+      transition: all 0.3s ease, var(--transition-theme);
+      color: var(--text-primary);
+      user-select: none;
+      overflow: hidden;
+    }
+    .theme-toggle:hover {
+      border-color: #0066CC;
+      transform: scale(1.05);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.6);
+    }
+    .theme-toggle:active {
+      transform: scale(0.95);
+    }
+    .theme-toggle .sun-icon, .theme-toggle .moon-icon {
+      position: absolute;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    body:not(.light-mode) .theme-toggle .sun-icon { 
+      opacity: 0; 
+      transform: rotate(-90deg) scale(0.5);
+    }
+    body.light-mode .theme-toggle .moon-icon { 
+      opacity: 0; 
+      transform: rotate(90deg) scale(0.5);
+    }
+
+    /* 无API警告样式 */
+    .no-api-warning {
+      background: rgba(179, 58, 58, 0.2);
+      border: 1px solid #B33A3A;
+      border-radius: 4px;
+      padding: 20px;
+      margin-bottom: 20px;
+      text-align: center;
+      transition: var(--transition-theme);
+    }
+    .no-api-warning p {
+      color: #FFB5B5;
+      font-size: 24px;
+      font-weight: 400;
+      transition: var(--transition-theme);
+    }
+
+    /* 可拖拽样式 */
+    .draggable {
+      cursor: grab;
+      user-select: none;
+      transition: none;
+    }
+    .draggable:active {
+      cursor: grabbing;
+    }
+    .draggable.dragging {
+      opacity: 0.9;
+      transition: none;
+    }
+
+    /* AI诊断面板头部布局 */
+    .ai-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      padding-top: 0;
+    }
+    
+    .ai-header h2 {
+      margin-bottom: 0;
+      display: flex;
+      align-items: center;
+    }
+    
+    .ai-subtitle {
+      color: var(--text-muted);
+      font-size: 24px;
+      margin-top: 0;
+      margin-bottom: 25px;
+      padding-left: 5px;
+      transition: var(--transition-theme);
+    }
+
+    /* ===== AI对话面板样式 (增强版，集成多模态) ===== */
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      height: 600px;
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--bg-secondary);
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .chat-message {
+      display: flex;
+      flex-direction: column;
+      max-width: 80%;
+    }
+
+    .chat-message.user {
+      align-self: flex-end;
+    }
+
+    .chat-message.ai {
+      align-self: flex-start;
+    }
+
+    .message-bubble {
+      padding: 12px 18px;
+      border-radius: 18px;
+      font-size: 20px;
+      line-height: 1.5;
+      word-wrap: break-word;
+      white-space: pre-wrap;
+    }
+
+    .user .message-bubble {
+      background: var(--chat-user-bg);
+      color: white;
+      border-bottom-right-radius: 4px;
+    }
+
+    .ai .message-bubble {
+      background: var(--chat-ai-bg);
+      color: var(--text-primary);
+      border-bottom-left-radius: 4px;
+    }
+
+    .message-timestamp {
+      font-size: 14px;
+      color: var(--chat-timestamp);
+      margin-top: 4px;
+      margin-left: 8px;
+      margin-right: 8px;
+    }
+
+    .chat-input-area {
+      display: flex;
+      padding: 15px;
+      gap: 10px;
+      background: var(--panel-bg);
+      border-top: 1px solid var(--panel-border);
+    }
+
+    .chat-text-input {
+      flex: 1;
+      padding: 12px 16px;
+      border: 1px solid var(--panel-border);
+      border-radius: 4px;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      font-size: 20px;
+      outline: none;
+    }
+
+    .chat-text-input:focus {
+      border-color: #0066CC;
+    }
+
+    .chat-toolbar {
+      display: flex;
+      padding: 10px 15px;
+      gap: 10px;
+      background: var(--panel-bg);
+      border-top: 1px solid var(--panel-border);
+      flex-wrap: wrap;
+    }
+
+    .chat-toolbar .btn {
+      flex: 1;
+      font-size: 18px;
+      padding: 8px 12px;
+      min-width: 100px;
+    }
+
+    .message-image {
+      max-width: 100%;
+      max-height: 200px;
+      border-radius: 8px;
+      margin-top: 8px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .message-image:hover {
+      transform: scale(1.02);
+    }
+
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .image-grid img {
+      width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+
+    /* 文件上传预览区域 */
+    .file-preview {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      background: var(--bg-primary);
+      border: 1px solid var(--panel-border);
+      border-radius: 4px;
+      margin: 10px 15px;
+    }
+
+    .file-preview img {
+      max-height: 50px;
+      max-width: 50px;
+      border-radius: 4px;
+    }
+
+    .file-preview span {
+      flex: 1;
+      color: var(--text-secondary);
+      font-size: 16px;
+    }
+
+    .file-preview button {
+      width: auto;
+      padding: 5px 10px;
+      font-size: 16px;
+    }
+
+    /* 视频生成面板 */
+    .doubao-video-panel {
+      margin-top: 30px;
+      padding: 20px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      border-left: 4px solid var(--doubao-video-accent);
+    }
+    
+    .doubao-video-panel h3 {
+      color: var(--doubao-video-accent);
+      font-size: 28px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .video-input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .video-options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin: 15px 0;
+    }
+    
+    .video-options label {
+      color: var(--text-secondary);
+      font-size: 18px;
+    }
+    
+    .video-preview {
+      max-width: 100%;
+      border-radius: 4px;
+      margin-top: 15px;
+    }
+    
+    .video-result {
+      margin-top: 20px;
+      padding: 15px;
+      background: var(--bg-primary);
+      border-radius: 4px;
+    }
+    
+    .video-result video {
+      width: 100%;
+      border-radius: 4px;
+      margin-top: 10px;
+    }
+    
+    .video-result a {
+      color: var(--doubao-video-accent);
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 10px;
+    }
+    
+    .video-result a:hover {
+      text-decoration: underline;
+    }
+    
+    /* 模型提示标签 */
+    .model-tip {
+      background: rgba(155, 89, 182, 0.2);
+      border-radius: 20px;
+      padding: 5px 15px;
+      font-size: 16px;
+      color: var(--doubao-accent);
+      margin-left: 15px;
+    }
+    
+    .video-model-tip {
+      background: rgba(230, 126, 34, 0.2);
+      border-radius: 20px;
+      padding: 5px 15px;
+      font-size: 16px;
+      color: var(--doubao-video-accent);
+      margin-left: 15px;
+    }
+
+    /* 双API配置区域 */
+    .api-config-section {
+      background: var(--bg-primary);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border: 1px solid var(--panel-border);
+    }
+    
+    .api-config-section h3 {
+      color: var(--text-primary);
+      font-size: 24px;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .api-config-section h3 i {
+      color: var(--doubao-accent);
+    }
+    
+    .api-config-section.video h3 i {
+      color: var(--doubao-video-accent);
+    }
+  </style>
+</head>
+<body>
+  <!-- 英特尔风格顶部工具条 (修改专业版字样) -->
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <span>主板诊断平台</span>
+      <span>高性能版</span> <!-- 修改 -->
+    </div>
+    <div class="top-bar-right">
+      <i class="fas fa-search"></i>
+      <i class="fas fa-user-circle"></i>
+      <i class="fas fa-globe"></i>
+    </div>
+  </div>
+
+  <!-- 左下角深色模式切换按钮 -->
+  <div class="theme-toggle" id="themeToggleBtn">
+    <span class="sun-icon">☀️</span>
+    <span class="moon-icon">🌙</span>
+  </div>
+
+  <div class="container">
+    <!-- 第一行：标题 + 团队信息 (副标题修改) -->
+    <div class="header-row">
+      <div class="title-section">
+        <h1>智能计算机主板故障诊断平台</h1>
+        <p>诊断卡 · 实时监控 · 硬件分析</p> <!-- 修改 -->
+      </div>
+    </div>
+
+    <!-- 内容容器 -->
+    <div class="content-container">
+      <!-- 诊断面板 -->
+      <div id="diagnose-panel" class="content-panel active">
+        <!-- 进度条 -->
+        <div class="progress-container">
+          <div class="progress-label-left">📊 诊断进度</div>
+          <div class="progress-bar-wrapper">
+            <div class="progress-bar-bg">
+              <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+            </div>
+          </div>
+          <span class="progress-percent" id="progress-percent">0.0%</span>
+        </div>
+
+        <!-- 主日志区域 (两列) -->
+        <div class="main-log-container">
+          <div class="log-columns">
+            <div class="log-column" id="main-log-left">
+              <h3><i class="fas fa-microchip"></i> 诊断信息</h3>
+              <p class="info">📌 欢迎使用智能计算机主板故障诊断平台</p>
+              <p class="info">📌 操作步骤：① 展开左侧控制面板 ② 选择智能诊断卡串口 ③ 连接 ④ 开始检测</p>
+              <p class="info">📌 检测过程中请保持诊断卡连接稳定</p>
+            </div>
+            <div class="log-column" id="main-log-right">
+              <h3><i class="fas fa-chart-line"></i> 状态信息</h3>
+              <p class="info">智能系统准备就绪</p>
+              <p class="info">等待连接智能诊断卡</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI诊断分析面板 (修改描述) -->
+      <div id="ai-diagnose-panel" class="content-panel">
+        <div class="ai-header">
+          <h2><i class="fas fa-robot"></i> AI智能诊断分析 <span class="ai-badge">辅助分析</span></h2> <!-- 修改 -->
+          <div class="ai-action-bar">
+            <button class="btn btn-ai" id="ai-analyze-btn" style="font-size: 24px; padding: 12px 25px;" disabled>
+              <i class="fas fa-brain"></i> AI分析当前结果
+            </button>
+            <button class="btn btn-cancel" id="cancel-analysis-btn" style="font-size: 20px; padding: 12px 20px; display: none;">
+              <i class="fas fa-times-circle"></i> 取消分析
+            </button>
+          </div>
+        </div>
+        
+        <div class="ai-subtitle">基于最新的诊断结果，AI将提供专业的分析报告和维修建议</div>
+        
+        <div id="ai-analysis-status" style="background: rgba(0,102,204,0.1); border-radius: 4px; padding: 20px; margin-bottom: 20px; display: none;">
+          <div style="display: flex; align-items: center; gap: 15px;">
+            <i class="fas fa-spinner fa-pulse" style="font-size: 30px; color: #0066CC;"></i>
+            <span style="font-size: 22px; color: var(--text-secondary);">AI正在生成分析报告，请稍候...</span> <!-- 修改 -->
+          </div>
+        </div>
+        
+        <div id="ai-analysis-result">
+          <div style="text-align: center; color: var(--text-muted); padding: 80px 0;">
+            <i class="fas fa-robot" style="font-size: 80px; margin-bottom: 30px;"></i>
+            <p style="font-size: 32px; margin-top: 30px;">点击上方按钮，AI将分析最新诊断结果</p> <!-- 修改 -->
+            <p style="font-size: 28px;">需要先完成一次诊断检测</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI配置面板 - 双API配置 -->
+      <div id="ai-config-panel" class="content-panel">
+        <h2><i class="fas fa-cog"></i> AI大模型配置</h2>
+        
+        <div style="background: var(--bg-secondary); border-radius: 4px; padding: 30px; border: 1px solid var(--panel-border);">
+          
+          <div style="margin-bottom: 25px; display: flex; align-items: center; gap: 15px;">
+            <label style="font-size: 22px; color: var(--text-secondary); min-width: 120px;">启用AI分析</label>
+            <label class="switch">
+              <input type="checkbox" id="ai-enabled">
+              <span class="slider"></span>
+            </label>
+          </div>
+          
+          <!-- 对话/分析模型配置 -->
+          <div class="api-config-section">
+            <h3><i class="fas fa-comments"></i> 对话 / 分析模型</h3>
+            <div style="margin-bottom: 15px;">
+              <label style="font-size: 20px; color: var(--text-secondary); display: block; margin-bottom: 8px;">API 密钥</label>
+              <input type="text" class="port-select" id="doubao20-api-key" placeholder="输入 API 密钥" style="width: 100%; font-size: 20px; font-family: monospace;">
+            </div>
+            <div style="margin-bottom: 15px;">
+              <label style="font-size: 20px; color: var(--text-secondary); display: block; margin-bottom: 8px;">模型名称</label>
+              <input type="text" class="port-select" id="doubao20-model" value="doubao-seed-2-0-pro-260215" style="width: 100%; font-size: 20px;">
+            </div>
+          </div>
+          
+          <!-- 视频生成模型配置 -->
+          <div class="api-config-section video">
+            <h3><i class="fas fa-video"></i> 视频生成模型</h3>
+            <div style="margin-bottom: 15px;">
+              <label style="font-size: 20px; color: var(--text-secondary); display: block; margin-bottom: 8px;">API 密钥</label>
+              <input type="text" class="port-select" id="doubao15-video-api-key" placeholder="输入视频生成 API 密钥" style="width: 100%; font-size: 20px; font-family: monospace;">
+            </div>
+            <div style="margin-bottom: 15px;">
+              <label style="font-size: 20px; color: var(--text-secondary); display: block; margin-bottom: 8px;">模型名称</label>
+              <input type="text" class="port-select" id="doubao15-video-model" value="doubao-seedance-1-5-pro-251215" style="width: 100%; font-size: 20px;">
+            </div>
+          </div>
+          
+          <div style="margin-bottom: 25px;">
+            <label style="font-size: 22px; color: var(--text-secondary); display: block; margin-bottom: 10px;">API 地址（兼容 OpenAI 格式）</label>
+            <input type="text" class="port-select" id="ai-api-url" placeholder="https://api.openai.com/v1" value="https://ark.cn-beijing.volces.com/api/v3" style="width: 100%; font-size: 20px;">
+          </div>
+          
+          <div style="margin-bottom: 25px;">
+            <label style="font-size: 22px; color: var(--text-secondary); display: block; margin-bottom: 10px;">温度 (0-2, 越高越创造性)</label>
+            <input type="range" id="ai-temperature" min="0" max="2" step="0.1" value="0.7" style="width: 100%;">
+            <span id="temp-value" style="font-size: 18px; color: var(--text-secondary); margin-left: 10px;">0.7</span>
+          </div>
+          
+          <div style="margin-bottom: 25px;">
+            <label style="font-size: 22px; color: var(--text-secondary); display: block; margin-bottom: 10px;">最大输出Token数</label>
+            <input type="number" class="port-select" id="ai-max-tokens" value="2000" min="100" max="8000" style="width: 100%; font-size: 20px;">
+          </div>
+          
+          <div style="display: flex; gap: 20px; margin-top: 30px;">
+            <button class="btn btn-connect" id="save-ai-config" style="font-size: 24px; padding: 15px 30px; flex: 1; background: #0066CC;">
+              <i class="fas fa-save"></i> 保存配置
+            </button>
+            <button class="btn btn-detect" id="test-ai-config" style="font-size: 24px; padding: 15px 30px; flex: 1;">
+              <i class="fas fa-plug"></i> 测试连接
+            </button>
+          </div>
+          <p style="margin-top: 15px; color: var(--text-muted); font-size: 16px;">✨ 对话模型支持多模态图像识别，视频模型支持图生视频/文生视频。API 地址兼容 OpenAI 接口格式，可对接多种大模型服务。</p>
+        </div>
+      </div>
+
+      <!-- 产品说明面板 -->
+      <div id="intro-panel" class="content-panel">
+        <h2><i class="fas fa-info-circle"></i> 产品说明</h2>
+        <h3>关于智能主板诊断卡</h3>
+        <p>智能主板诊断卡是一款基于蓝牙无线通信技术的硬件诊断设备，无需繁琐接线即可快速诊断主板故障，支持市面上主流工业级和消费级主板型号。</p>
+        <p>本诊断平台配套诊断卡使用，提供可视化诊断流程、实时数据监控、故障智能分析等功能，帮助工程师快速定位主板故障点，提升维修效率。</p>
+        <h3>产品特点</h3>
+        <ul>
+          <li>蓝牙5.0无线连接，传输距离可达10米</li>
+          <li>实时采集主板电压、温度、电流等关键参数</li>
+          <li>内置故障分析算法，智能匹配故障类型</li>
+          <li>兼容Windows平台，开箱即用</li>
+          <li>低功耗设计，单节锂电池续航可达8小时</li>
+        </ul>
+        <h3>适用场景</h3>
+        <ul>
+          <li>主板生产线质量检测</li>
+          <li>电脑维修店故障诊断</li>
+          <li>工业设备主板维护</li>
+          <li>实验室主板研发测试</li>
+          <li>个人电脑故障排查</li>
+        </ul>
+      </div>
+
+      <!-- 功能介绍面板 -->
+      <div id="feature-panel" class="content-panel">
+        <h2><i class="fas fa-star"></i> 功能介绍</h2>
+        <div class="feature-grid">
+          <div class="feature-item"><h3><i class="fas fa-bolt"></i> 硬件参数检测</h3><p>实时检测主板核心电压（3.3V/5V/12V）、CPU温度、芯片组温度、内存电压等关键参数，精准识别电压不稳、温度过高等异常情况。</p></div>
+          <div class="feature-item"><h3><i class="fas fa-search"></i> 故障智能分析</h3><p>内置1000+故障案例库，通过采集到的数据流自动匹配故障类型，给出精准的故障定位和解决方案建议。</p></div>
+          <div class="feature-item"><h3><i class="fas fa-chart-bar"></i> 数据趋势监控</h3><p>记录检测过程中的参数变化趋势，生成可视化图表，帮助分析故障产生的时间节点和变化规律。</p></div>
+          <div class="feature-item"><h3><i class="fas fa-file-alt"></i> 诊断报告生成</h3><p>检测完成后自动生成详细的诊断报告，包含故障类型、参数数据、解决方案等，支持导出PDF格式存档。</p></div>
+          <div class="feature-item"><h3><i class="fas fa-link"></i> 多设备兼容</h3><p>支持同时连接多个诊断卡，批量检测多块主板，提升批量维修效率。</p></div>
+          <div class="feature-item"><h3><i class="fas fa-sync-alt"></i> 固件在线升级</h3><p>支持诊断卡固件在线升级，持续更新故障库和算法，保持产品竞争力。</p></div>
+        </div>
+        <h3>扩展功能</h3>
+        <ul>
+          <li>自定义检测参数阈值，满足个性化诊断需求</li>
+          <li>历史检测记录查询，支持按时间/设备编号检索</li>
+          <li>远程诊断支持，可通过网络分享诊断数据</li>
+          <li>故障预警功能，提前识别潜在的主板故障风险</li>
+        </ul>
+      </div>
+
+      <!-- 常见问题面板 (修改Q3, Q4) -->
+      <div id="faq-panel" class="content-panel">
+        <h2><i class="fas fa-question-circle"></i> 常见问题</h2>
+        <h3>Q1: 诊断卡连接失败怎么办？</h3>
+        <p>A: 请检查以下几点：① 诊断卡是否已开机 ② 蓝牙是否开启并配对 ③ 串口是否被其他程序占用 ④ 驱动是否安装正常。如仍无法连接，请重启诊断卡和电脑后重试。</p>
+        <h3>Q2: 检测数据不准确如何处理？</h3>
+        <p>A: 首先确认诊断卡与主板接触良好，无松动情况；其次检查主板供电是否稳定；如问题依旧，可尝试重新连接或重启软件。</p>
+        <h3>Q3: 支持哪些主板？</h3>
+        <p>A: 只要主板带有板载USB接口或标准PCI插槽均可使用，覆盖绝大多数消费级和工业级主板。</p> <!-- 修改 -->
+        <h3>Q4: 诊断卡如何供电？</h3>
+        <p>A: 诊断卡直接通过外接USB接口供电，即插即用，无需独立电池或电源适配器。</p> <!-- 修改 -->
+        <h3>Q5: 软件运行卡顿如何优化？</h3>
+        <p>A: 建议关闭其他占用资源的程序，确保电脑内存不少于8GB；如使用无线连接，确保蓝牙信号稳定。</p>
+        <h3>Q6: AI 分析功能无法使用？</h3>
+        <p>A: 请检查 AI 配置面板中 API 密钥和 API 地址是否填写正确，并确认已开启"启用AI分析"开关。API 地址需兼容 OpenAI 接口格式。</p>
+      </div>
+
+      <!-- 联系方式面板 -->
+      <div id="contact-panel" class="content-panel">
+        <h2><i class="fas fa-address-book"></i> 联系方式</h2>
+        <h3>技术支持</h3>
+        <p>📧 邮箱：（请填写联系邮箱）</p>
+        <p>💻 在线支持：工作日 9:00-18:00</p>
+        <h3>问题反馈</h3>
+        <p>如遇到软件问题，请通过邮件或 GitHub Issues 提交反馈，描述问题现象和复现步骤，我们会尽快响应。</p>
+      </div>
+
+      <!-- 产品购买面板 -->
+      <div id="buy-panel" class="content-panel">
+        <h2><i class="fas fa-shopping-cart"></i> 产品购买</h2>
+        <div class="product-card">
+          <div class="product-img">智能诊断卡<br/>PRO版</div>
+          <div class="product-info">
+            <h3>智能主板诊断卡 PRO 版</h3>
+            <p>旗舰级诊断设备，支持全功能检测，内置高级故障分析算法，适合专业维修机构和企业用户。</p>
+            <div class="product-price">¥ 1999.00</div>
+            <ul>
+              <li>蓝牙5.0无线连接</li>
+              <li>全参数检测（电压/温度/电流/电阻）</li>
+              <li>高级故障分析算法</li>
+              <li>批量检测支持（最多8台）</li>
+              <li>1年免费升级+终身维护</li>
+              <li>含专用充电底座+备用电池</li>
+            </ul>
+            <button class="product-btn">立即购买</button>
+          </div>
+        </div>
+        <div class="product-card">
+          <div class="product-img">智能诊断卡<br/>标准版</div>
+          <div class="product-info">
+            <h3>智能主板诊断卡 标准版</h3>
+            <p>入门级诊断设备，满足基础故障检测需求，适合个人用户和小型维修店。</p>
+            <div class="product-price">¥ 999.00</div>
+            <ul>
+              <li>蓝牙5.0无线连接</li>
+              <li>核心参数检测（电压/温度）</li>
+              <li>基础故障分析算法</li>
+              <li>单设备检测</li>
+              <li>6个月免费升级</li>
+              <li>含充电线+便携包</li>
+            </ul>
+            <button class="product-btn">立即购买</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI对话面板 - 简化版，只保留对话和图像识别 -->
+      <div id="ai-chat-panel" class="content-panel">
+        <h2><i class="fas fa-comments"></i> AI 多模态对话</h2>
+        <div class="chat-container">
+          <div class="chat-messages" id="chatMessages">
+            <!-- 动态消息将在此显示 -->
+          </div>
+          
+          <!-- 文件预览区域 (动态显示) -->
+          <div id="filePreviewArea" class="file-preview" style="display: none;">
+            <img id="previewThumb" src="" alt="预览">
+            <span id="previewFileName"></span>
+            <button class="btn btn-cancel" id="clearFileBtn"><i class="fas fa-times"></i> 清除</button>
+          </div>
+          
+          <div class="chat-input-area">
+            <input type="file" id="chatFileInput" accept="image/*" style="display: none;">
+            <button class="btn btn-outline" id="attachFileBtn" style="width: auto; padding: 10px 20px;"><i class="fas fa-paperclip"></i></button>
+            <input type="text" class="chat-text-input" id="chatTextInput" placeholder="输入消息...">
+            <button class="btn btn-primary" id="sendChatBtn" style="width: auto; padding: 10px 20px;"><i class="fas fa-paper-plane"></i></button>
+          </div>
+        </div>
+        
+        <!-- 视频生成面板 -->
+        <div id="doubaoVideoPanel" class="doubao-video-panel">
+          <h3><i class="fas fa-film"></i> 视频生成 <span class="video-model-tip">图生视频 / 文生视频</span></h3>
+          <div class="video-input-group">
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <input type="file" id="videoImageFile" accept="image/*" style="display: none;">
+              <button class="btn btn-outline" id="selectVideoImageBtn" style="width: auto; padding: 10px 20px;">
+                <i class="fas fa-image"></i> 选择图片
+              </button>
+              <span id="selectedImageName" style="color: var(--text-secondary); font-size: 16px;">未选择图片</span>
+              <button class="btn btn-cancel" id="clearVideoImageBtn" style="width: auto; padding: 5px 10px; display: none;">
+                <i class="fas fa-times"></i> 清除
+              </button>
+            </div>
+            <textarea class="port-select" id="videoPrompt" rows="3" placeholder="视频描述 (例如: 无人机以极快速度穿越复杂障碍，带来沉浸式飞行体验)" style="font-size: 18px;"></textarea>
+            
+            <div class="video-options">
+              <div>
+                <label>时长(秒):</label>
+                <input type="number" id="videoDuration" value="5" min="1" max="10" class="port-select" style="font-size: 16px; padding: 6px;">
+              </div>
+              <div>
+                <label>固定镜头:</label>
+                <input type="checkbox" id="videoCameraFixed">
+              </div>
+              <div>
+                <label>添加水印:</label>
+                <input type="checkbox" id="videoWatermark" checked>
+              </div>
+            </div>
+            
+            <button class="btn btn-ai" id="createVideoBtn" style="font-size: 20px; background: var(--doubao-video-accent); border-color: var(--doubao-video-accent);">
+              <i class="fas fa-play"></i> 创建图生视频任务
+            </button>
+          </div>
+          
+          <div id="videoTaskStatus" style="margin-top: 15px; display: none;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <i class="fas fa-spinner fa-pulse" style="color: var(--doubao-video-accent);"></i>
+              <span style="color: var(--text-secondary);" id="videoStatusMessage">任务处理中...</span>
+            </div>
+          </div>
+          
+          <div id="videoResult" class="video-result" style="margin-top: 15px; display: none;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 左侧悬浮控制面板 -->
+  <div class="control-panel-container draggable" id="controlPanelContainer">
+    <div class="control-panel-button" id="controlPanelButton">
+      <i class="fas fa-sliders-h"></i>
+    </div>
+    <div class="control-panel-expanded" id="controlPanelExpanded">
+      <div class="control-panel-header">
+        <span><i class="fas fa-microchip"></i> 智能诊断卡</span>
+        <button class="close-panel-btn" id="closePanelBtn">✕</button>
+      </div>
+      <div class="control-panel-content">
+        <select class="port-select" id="port-select" disabled>
+          <option value="">🔍 扫描中...请稍候</option>
+        </select>
+        <div class="button-row">
+          <button class="btn btn-connect" id="connect-btn" disabled>
+            <i class="fas fa-plug"></i> 连接串口
+          </button>
+          <button class="btn btn-disconnect" id="disconnect-btn" disabled>
+            <i class="fas fa-power-off"></i> 断开连接
+          </button>
+          <button class="btn btn-detect" id="detect-btn" disabled>
+            <i class="fas fa-play"></i> 开始检测
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 右下角悬浮圆形日志 -->
+  <div class="float-log-container" id="floatLogContainer">
+    <div class="circle-icon"><i class="fas fa-terminal"></i></div>
+    <div class="log-card-content">
+      <div class="log-card-header">
+        <span><i class="fas fa-list-alt"></i> 详细日志</span>
+        <button class="close-log-btn" id="closeFloatLogBtn">✕</button>
+      </div>
+      <div class="log-card-body" id="float-detail-log">
+        <p>[系统] 详细调试日志 (仅供维护使用)</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 右侧悬浮伸缩菜单 -->
+  <div class="right-menu-toggle draggable" id="rightMenuToggle"><i class="fas fa-chevron-left"></i></div>
+  <div class="right-menu-panel" id="rightMenuPanel">
+    <button class="vertical-menu-btn active" data-target="diagnose-panel"><i class="fas fa-tachometer-alt"></i> 诊断面板</button>
+    <button class="vertical-menu-btn" data-target="ai-diagnose-panel"><i class="fas fa-robot"></i> AI诊断分析</button>
+    <button class="vertical-menu-btn" data-target="ai-config-panel"><i class="fas fa-cog"></i> AI配置</button>
+    <button class="vertical-menu-btn" data-target="ai-chat-panel"><i class="fas fa-comments"></i> AI 对话</button>
+    <button class="vertical-menu-btn" data-target="intro-panel"><i class="fas fa-info-circle"></i> 产品说明</button>
+    <button class="vertical-menu-btn" data-target="feature-panel"><i class="fas fa-star"></i> 功能介绍</button>
+    <button class="vertical-menu-btn" data-target="faq-panel"><i class="fas fa-question-circle"></i> 常见问题</button>
+    <button class="vertical-menu-btn" data-target="contact-panel"><i class="fas fa-address-book"></i> 联系方式</button>
+    <button class="vertical-menu-btn" data-target="buy-panel"><i class="fas fa-shopping-cart"></i> 产品购买</button>
+  </div>
+
+  <!-- ==================== 以下为完整的JavaScript代码，保持原样 ==================== -->
+  <script>
+    (function() {
+      // ---------- 深色模式切换 ----------
+      const themeToggle = document.getElementById('themeToggleBtn');
+      const body = document.body;
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'light') {
+        body.classList.add('light-mode');
+      }
+
+      themeToggle.addEventListener('click', () => {
+        themeToggle.style.transform = 'scale(0.9)';
+        setTimeout(() => themeToggle.style.transform = '', 150);
+        body.classList.toggle('light-mode');
+        localStorage.setItem('theme', body.classList.contains('light-mode') ? 'light' : 'dark');
+      });
+
+      // ---------- 可拖拽功能 ----------
+      const draggables = document.querySelectorAll('.draggable');
+      draggables.forEach(el => {
+        let isDragging = false;
+        let startX, startY, initialLeft, initialTop;
+        const onMouseMove = (e) => {
+          if (!isDragging) return;
+          e.preventDefault();
+          const dx = e.clientX - startX;
+          const dy = e.clientY - startY;
+          if (Math.abs(dx) > 5 || Math.abs(dy) > 5) el.classList.add('dragging');
+          el.style.left = (initialLeft + dx) + 'px';
+          el.style.top = (initialTop + dy) + 'px';
+          el.style.right = 'auto';
+          el.style.bottom = 'auto';
+        };
+        const onMouseUp = () => {
+          if (isDragging) {
+            const wasDragged = el.classList.contains('dragging');
+            isDragging = false;
+            el.classList.remove('dragging');
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+            if (wasDragged) el.dataset.lastDragged = Date.now().toString();
+          }
+        };
+        el.addEventListener('mousedown', (e) => {
+          if (e.target.closest('button') || e.target.closest('.close-left-btn') || 
+              e.target.closest('.close-log-btn') || e.target.closest('.close-panel-btn') ||
+              e.target.closest('select') || e.target.closest('.vertical-menu-btn')) return;
+          e.preventDefault();
+          isDragging = true;
+          const rect = el.getBoundingClientRect();
+          initialLeft = rect.left;
+          initialTop = rect.top;
+          startX = e.clientX;
+          startY = e.clientY;
+          document.addEventListener('mousemove', onMouseMove);
+          document.addEventListener('mouseup', onMouseUp);
+        });
+      });
+
+      // ---------- 控制面板 ----------
+      const controlPanelContainer = document.getElementById('controlPanelContainer');
+      const controlPanelButton = document.getElementById('controlPanelButton');
+      const closePanelBtn = document.getElementById('closePanelBtn');
+      controlPanelButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const lastDragged = controlPanelContainer.dataset.lastDragged;
+        if (lastDragged && (Date.now() - parseInt(lastDragged)) < 500) return;
+        controlPanelContainer.classList.add('expanded');
+      });
+      closePanelBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        controlPanelContainer.classList.remove('expanded');
+      });
+
+      // ---------- 右侧菜单 ----------
+      const rightMenuToggle = document.getElementById('rightMenuToggle');
+      const rightMenuPanel = document.getElementById('rightMenuPanel');
+      const menuBtns = document.querySelectorAll('.vertical-menu-btn');
+      const contentPanels = document.querySelectorAll('.content-panel');
+
+      rightMenuToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const lastDragged = rightMenuToggle.dataset.lastDragged;
+        if (lastDragged && (Date.now() - parseInt(lastDragged)) < 500) return;
+        if (rightMenuPanel.classList.contains('show')) {
+          rightMenuPanel.classList.remove('show');
+          rightMenuToggle.innerHTML = '<i class="fas fa-chevron-left"></i>';
+        } else {
+          rightMenuPanel.classList.add('show');
+          rightMenuToggle.innerHTML = '<i class="fas fa-chevron-right"></i>';
+        }
+      });
+
+      menuBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const targetId = btn.dataset.target;
+          contentPanels.forEach(panel => panel.classList.remove('active'));
+          document.getElementById(targetId).classList.add('active');
+          menuBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          rightMenuPanel.classList.remove('show');
+          rightMenuToggle.innerHTML = '<i class="fas fa-chevron-left"></i>';
+        });
+      });
+
+      // ---------- 右下角日志 ----------
+      const floatLogContainer = document.getElementById('floatLogContainer');
+      const closeFloatLogBtn = document.getElementById('closeFloatLogBtn');
+      const floatDetailLog = document.getElementById('float-detail-log');
+
+      floatLogContainer.addEventListener('click', (e) => {
+        if (e.target.closest('.close-log-btn')) return;
+        const lastDragged = floatLogContainer.dataset.lastDragged;
+        if (lastDragged && (Date.now() - parseInt(lastDragged)) < 500) return;
+        floatLogContainer.classList.add('expanded');
+      });
+      closeFloatLogBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        floatLogContainer.classList.remove('expanded');
+      });
+
+      // ---------- 原有功能相关元素 ----------
+      const portSelect = document.getElementById('port-select');
+      const connectBtn = document.getElementById('connect-btn');
+      const disconnectBtn = document.getElementById('disconnect-btn');
+      const detectBtn = document.getElementById('detect-btn');
+      const mainLogLeft = document.getElementById('main-log-left');
+      const mainLogRight = document.getElementById('main-log-right');
+      const progressFill = document.getElementById('progress-fill');
+      const progressPercent = document.getElementById('progress-percent');
+      
+      // 双API配置元素
+      const aiEnabled = document.getElementById('ai-enabled');
+      const doubao20ApiKey = document.getElementById('doubao20-api-key');
+      const doubao20Model = document.getElementById('doubao20-model');
+      const doubao15VideoApiKey = document.getElementById('doubao15-video-api-key');
+      const doubao15VideoModel = document.getElementById('doubao15-video-model');
+      const aiApiUrl = document.getElementById('ai-api-url');
+      const aiTemperature = document.getElementById('ai-temperature');
+      const tempValue = document.getElementById('temp-value');
+      const aiMaxTokens = document.getElementById('ai-max-tokens');
+      const saveAIConfigBtn = document.getElementById('save-ai-config');
+      const testAIConfigBtn = document.getElementById('test-ai-config');
+      const aiAnalyzeBtn = document.getElementById('ai-analyze-btn');
+      const cancelAnalysisBtn = document.getElementById('cancel-analysis-btn');
+      const aiAnalysisStatus = document.getElementById('ai-analysis-status');
+      const aiAnalysisResult = document.getElementById('ai-analysis-result');
+      
+      // 视频相关元素
+      const doubaoVideoPanel = document.getElementById('doubaoVideoPanel');
+      const videoImageFile = document.getElementById('videoImageFile');
+      const selectVideoImageBtn = document.getElementById('selectVideoImageBtn');
+      const selectedImageName = document.getElementById('selectedImageName');
+      const clearVideoImageBtn = document.getElementById('clearVideoImageBtn');
+      const videoPrompt = document.getElementById('videoPrompt');
+      const videoDuration = document.getElementById('videoDuration');
+      const videoCameraFixed = document.getElementById('videoCameraFixed');
+      const videoWatermark = document.getElementById('videoWatermark');
+      const createVideoBtn = document.getElementById('createVideoBtn');
+      const videoTaskStatus = document.getElementById('videoTaskStatus');
+      const videoStatusMessage = document.getElementById('videoStatusMessage');
+      const videoResult = document.getElementById('videoResult');
+
+      let selectedPort = '';
+      let isConnected = false;
+      let detectionInterval = null;
+      let detectedMainMessages = new Set();
+      let detectedDetailMessages = new Set();
+      let lastDiagnosisData = null;
+      let isAIStreaming = false;
+      let selectedVideoImageBase64 = null;
+
+      if (aiTemperature) {
+        aiTemperature.addEventListener('input', () => tempValue.textContent = aiTemperature.value);
+      }
+
+      // ---------- 图片选择功能 ----------
+      selectVideoImageBtn.addEventListener('click', () => {
+        videoImageFile.click();
+      });
+
+      videoImageFile.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        if (!file.type.startsWith('image/')) {
+          alert('请选择图片文件');
+          return;
+        }
+        
+        if (file.size > 10 * 1024 * 1024) {
+          alert('图片大小不能超过10MB');
+          return;
+        }
+        
+        selectedImageName.textContent = file.name;
+        clearVideoImageBtn.style.display = 'inline-flex';
+        
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          selectedVideoImageBase64 = event.target.result.split(',')[1];
+        };
+        reader.readAsDataURL(file);
+      });
+
+      clearVideoImageBtn.addEventListener('click', () => {
+        videoImageFile.value = '';
+        selectedImageName.textContent = '未选择图片';
+        clearVideoImageBtn.style.display = 'none';
+        selectedVideoImageBase64 = null;
+      });
+
+      // ---------- 日志函数 ----------
+      function addLogToColumn(text, type) {
+        const p = document.createElement('p');
+        let displayText = text.startsWith('📊') ? text.replace(/^📊\s*/, '') : text;
+        p.textContent = displayText;
+        p.className = type;
+        p.classList.remove('removing');
+        (text.startsWith('📊') || text.startsWith('✔') ? mainLogRight : mainLogLeft).appendChild(p);
+        p.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      function clearLogColumn(column) {
+        Array.from(column.children).filter(child => child.tagName === 'P').forEach(p => {
+          p.classList.add('removing');
+          p.addEventListener('animationend', () => p.remove(), { once: true });
+        });
+      }
+
+      function resetDetectionState() {
+        detectedMainMessages.clear();
+        detectedDetailMessages.clear();
+        if (detectionInterval) clearInterval(detectionInterval);
+      }
+
+      function addDetailLog(text) {
+        const p = document.createElement('p');
+        const time = new Date().toLocaleTimeString('zh-CN', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        p.textContent = `[${time}] ${text}`;
+        p.classList.remove('removing');
+        floatDetailLog.appendChild(p);
+        if (floatLogContainer.classList.contains('expanded')) floatDetailLog.scrollTop = floatDetailLog.scrollHeight;
+        if (floatDetailLog.children.length > 200) {
+          const oldP = floatDetailLog.children[0];
+          oldP.classList.add('removing');
+          oldP.addEventListener('animationend', () => oldP.remove(), { once: true });
+        }
+      }
+
+      function collectDiagnosisData() {
+        const leftLogs = Array.from(mainLogLeft.querySelectorAll('p')).map(p => p.textContent);
+        const rightLogs = Array.from(mainLogRight.querySelectorAll('p')).map(p => p.textContent);
+        const faultCodes = [];
+        const codeRegex = /0x[0-9A-F]{2}/g;
+        leftLogs.forEach(log => {
+          const matches = log.match(codeRegex);
+          if (matches) matches.forEach(code => {
+            const desc = log.split('→')[1] || log;
+            faultCodes.push({ code, desc: desc.trim() });
+          });
+        });
+        const normalCodes = leftLogs.filter(log => log.includes('正常码') || log.includes('✅ 正常码'));
+        const memoryFaults = faultCodes.filter(f => f.desc.includes('内存') || f.desc.includes('DIMM') || f.desc.includes('SPD'));
+        return { faultCodes, hasNormal: normalCodes.length > 0, normalCode: normalCodes[0] || null, memoryFaults, allDetectedCodes: [...new Set([...leftLogs, ...rightLogs])] };
+      }
+
+      function removeAIStreamListeners() {
+        if (window.electronAPI) window.electronAPI.removeAIStreamListeners?.();
+        isAIStreaming = false;
+        cancelAnalysisBtn.style.display = 'none';
+      }
+
+      // ---------- 原有API交互 ----------
+      if (!window.electronAPI) {
+        addDetailLog('[系统] 错误：未检测到真实硬件API，诊断功能不可用');
+        const warningDiv = document.createElement('div');
+        warningDiv.className = 'no-api-warning';
+        warningDiv.innerHTML = '<p>⚠️ 未检测到真实硬件API，诊断功能不可用</p><p>请确保已正确安装并运行硬件驱动</p>';
+        document.querySelector('.main-log-container').prepend(warningDiv);
+        if (connectBtn) connectBtn.disabled = disconnectBtn.disabled = detectBtn.disabled = aiAnalyzeBtn.disabled = portSelect.disabled = true;
+        addLogToColumn('❌ 硬件API未连接，请检查驱动', 'error');
+      } else {
+        // 串口扫描
+        window.electronAPI.scanPorts().then(ports => {
+          portSelect.innerHTML = '';
+          ports.forEach(port => portSelect.innerHTML += `<option value="${port.id}">智能诊断卡 - ${port.name}</option>`);
+          portSelect.disabled = false;
+          connectBtn.disabled = false;
+          addDetailLog('[系统] 串口扫描完成，可选列表已更新');
+        }).catch(() => portSelect.innerHTML = `<option value="error">⚠️ 扫描失败，请重试</option>`);
+
+        // 连接串口
+        connectBtn.addEventListener('click', () => {
+          selectedPort = portSelect.value;
+          if (!selectedPort || selectedPort === 'error') {
+            addLogToColumn('❌ 请选择有效的蓝牙串口', 'error');
+            return;
+          }
+          connectBtn.disabled = true;
+          connectBtn.innerHTML = `<i class="fas fa-spinner fa-pulse"></i> 连接中...`;
+          addLogToColumn(`📊 正在连接串口：${selectedPort}`, 'info');
+          addDetailLog(`[操作] 连接串口：${selectedPort}`);
+          window.electronAPI.connectPort(selectedPort).then(res => {
+            if (res.includes('✅')) {
+              isConnected = true;
+              detectBtn.disabled = false;
+              disconnectBtn.disabled = false;
+              connectBtn.innerHTML = `<i class="fas fa-check"></i> 已连接`;
+              connectBtn.style.background = '#1E7A5C';
+              connectBtn.style.borderColor = '#1E7A5C';
+              addLogToColumn('📊 ✅ 蓝牙连接成功！', 'success');
+            } else {
+              connectBtn.disabled = false;
+              connectBtn.innerHTML = `<i class="fas fa-plug"></i> 连接串口`;
+            }
+          });
+        });
+
+        // 断开连接
+        disconnectBtn.addEventListener('click', () => {
+          if (!isConnected) {
+            addLogToColumn('❌ 当前未连接任何设备', 'error');
+            return;
+          }
+          if (detectionInterval) clearInterval(detectionInterval);
+          detectedMainMessages.clear();
+          detectedDetailMessages.clear();
+          disconnectBtn.disabled = true;
+          disconnectBtn.innerHTML = `<i class="fas fa-spinner fa-pulse"></i> 断开中...`;
+          addLogToColumn(`📊 正在强制断开串口：${selectedPort}`, 'info');
+          addDetailLog(`[操作] 强制断开串口连接：${selectedPort}`);
+          window.electronAPI.disconnectPort(selectedPort).then(res => {
+            isConnected = false;
+            connectBtn.disabled = false;
+            detectBtn.disabled = true;
+            aiAnalyzeBtn.disabled = true;
+            disconnectBtn.disabled = false;
+            progressFill.style.width = '0%';
+            progressPercent.textContent = '0.0%';
+            connectBtn.innerHTML = `<i class="fas fa-plug"></i> 连接串口`;
+            connectBtn.style.background = '#0066CC';
+            connectBtn.style.borderColor = '#0066CC';
+            detectBtn.innerHTML = `<i class="fas fa-play"></i> 开始检测`;
+            detectBtn.classList.remove('pulse');
+            disconnectBtn.innerHTML = `<i class="fas fa-power-off"></i> 断开连接`;
+            addLogToColumn('📊 ✅ 已断开连接', 'success');
+            addDetailLog('[断开] 断开成功');
+          }).catch(err => {
+            addLogToColumn(`❌ 断开失败: ${err.message}`, 'error');
+            addDetailLog(`[断开错误] ${err.message}`);
+            disconnectBtn.disabled = false;
+          });
+        });
+
+        // 开始检测
+        detectBtn.addEventListener('click', () => {
+          if (!isConnected) {
+            addLogToColumn('❌ 请先连接串口', 'error');
+            return;
+          }
+          resetDetectionState();
+          clearLogColumn(mainLogLeft);
+          clearLogColumn(mainLogRight);
+          setTimeout(() => {
+            mainLogLeft.innerHTML = '<h3><i class="fas fa-microchip"></i> 诊断信息</h3>';
+            mainLogRight.innerHTML = '<h3><i class="fas fa-chart-line"></i> 状态信息</h3>';
+            addLogToColumn('📌 开始智能诊断（20秒后给出最终结果）...', 'info');
+          }, 300);
+          detectBtn.disabled = true;
+          detectBtn.innerHTML = `<i class="fas fa-spinner fa-pulse"></i> 检测中...`;
+          detectBtn.classList.add('pulse');
+          addDetailLog(`[操作] 点击开始检测，诊断指令已触发`);
+          window.electronAPI.startDetection(selectedPort).then(res => {
+            addLogToColumn(res, res.includes('⚠️') ? 'warning' : 'info');
+            addDetailLog(`[检测启动结果] ${res}`);
+          });
+          window.electronAPI.onSerialDataMain((data) => {
+            if (!detectedMainMessages.has(data)) {
+              detectedMainMessages.add(data);
+              addLogToColumn(data, 'info');
+            } else addDetailLog(`[去重] 主日志忽略重复消息: ${data.substring(0, 50)}...`);
+          });
+          window.electronAPI.onSerialDataDetail((data) => {
+            if (!detectedDetailMessages.has(data)) {
+              detectedDetailMessages.add(data);
+              addDetailLog(data);
+            }
+          });
+          window.electronAPI.onUpdateProgress((progress) => {
+            const progressValue = typeof progress === 'number' ? progress : parseFloat(progress) || 0;
+            progressFill.style.width = `${progressValue}%`;
+            progressPercent.textContent = `${progressValue.toFixed(1)}%`;
+            if (progressValue >= 99.9) {
+              setTimeout(() => {
+                detectBtn.disabled = false;
+                detectBtn.innerHTML = `<i class="fas fa-redo-alt"></i> 重新检测`;
+                detectBtn.classList.remove('pulse');
+                aiAnalyzeBtn.disabled = false;
+                aiAnalyzeBtn.classList.add('pulse');
+              }, 100);
+            }
+          });
+          window.electronAPI.onDiagnosisComplete((data) => {
+            lastDiagnosisData = data;
+            addDetailLog(`[诊断完成] 数据已保存，可用于AI分析`);
+          });
+        });
+
+        // AI配置功能 - 双API配置
+        window.electronAPI.getAIConfig().then(config => {
+          if (config) {
+            aiEnabled.checked = config.enabled || false;
+            
+            // 对话模型配置
+            if (config.doubao20) {
+              doubao20ApiKey.value = config.doubao20.apiKey || '';
+              doubao20Model.value = config.doubao20.model || 'doubao-seed-2-0-pro-260215';
+            }
+            
+            // 视频模型配置
+            if (config.doubao15Video) {
+              doubao15VideoApiKey.value = config.doubao15Video.apiKey || '';
+              doubao15VideoModel.value = config.doubao15Video.model || 'doubao-seedance-1-5-pro-251215';
+            }
+            
+            aiApiUrl.value = config.apiUrl || 'https://ark.cn-beijing.volces.com/api/v3';
+            aiTemperature.value = config.temperature || 0.7;
+            tempValue.textContent = config.temperature || 0.7;
+            aiMaxTokens.value = config.maxTokens || 2000;
+          }
+        });
+
+        // 修复输入框无法输入的bug：确保事件正确传播
+        const inputs = [doubao20ApiKey, doubao20Model, doubao15VideoApiKey, doubao15VideoModel, aiApiUrl, aiMaxTokens];
+        inputs.forEach(input => {
+          if (input) {
+            input.addEventListener('click', (e) => e.stopPropagation());
+            input.addEventListener('mousedown', (e) => e.stopPropagation());
+            input.addEventListener('keydown', (e) => e.stopPropagation());
+          }
+        });
+
+        saveAIConfigBtn.addEventListener('click', async () => {
+          const config = {
+            enabled: aiEnabled.checked,
+            apiUrl: aiApiUrl.value,
+            temperature: parseFloat(aiTemperature.value),
+            maxTokens: parseInt(aiMaxTokens.value),
+            doubao20: {
+              apiKey: doubao20ApiKey.value,
+              model: doubao20Model.value
+            },
+            doubao15Video: {
+              apiKey: doubao15VideoApiKey.value,
+              model: doubao15VideoModel.value
+            }
+          };
+          
+          saveAIConfigBtn.disabled = true;
+          saveAIConfigBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> 保存中...';
+          const result = await window.electronAPI.saveAIConfig(config);
+          saveAIConfigBtn.disabled = false;
+          saveAIConfigBtn.innerHTML = `<i class="fas fa-save"></i> 保存配置`;
+          if (result.success) { 
+            addDetailLog(`[AI配置] 保存成功`); 
+            alert('✅ AI配置保存成功！'); 
+          }
+          else { 
+            addDetailLog(`[AI配置] 保存失败: ${result.message}`); 
+            alert(`❌ 保存失败: ${result.message}`); 
+          }
+        });
+
+        testAIConfigBtn.addEventListener('click', async () => {
+          const config = {
+            enabled: true,
+            apiUrl: aiApiUrl.value,
+            temperature: parseFloat(aiTemperature.value),
+            maxTokens: parseInt(aiMaxTokens.value),
+            doubao20: {
+              apiKey: doubao20ApiKey.value,
+              model: doubao20Model.value
+            },
+            doubao15Video: {
+              apiKey: doubao15VideoApiKey.value,
+              model: doubao15VideoModel.value
+            }
+          };
+          
+          testAIConfigBtn.disabled = true;
+          testAIConfigBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> 测试中...';
+          await window.electronAPI.saveAIConfig(config);
+          
+          // 测试连接
+          const testData = { faultCodes: [], hasNormal: false, normalCode: null, memoryFaults: [], allDetectedCodes: ['测试请求'] };
+          const result = await window.electronAPI.analyzeWithAI(testData);
+          
+          testAIConfigBtn.disabled = false;
+          testAIConfigBtn.innerHTML = `<i class="fas fa-plug"></i> 测试连接`;
+          if (result.success) { 
+            addDetailLog(`[AI测试] 连接成功`); 
+            alert('✅ AI连接测试成功！API响应正常。'); 
+          }
+          else { 
+            addDetailLog(`[AI测试] 连接失败: ${result.message}`); 
+            alert(`❌ 连接测试失败: ${result.message}`); 
+          }
+        });
+
+        // AI流式分析
+        aiAnalyzeBtn.addEventListener('click', () => {
+          const hasDiagnosis = mainLogLeft.children.length > 1;
+          if (!hasDiagnosis) { alert('请先进行一次诊断检测，然后再进行AI分析'); return; }
+          const diagnosisData = lastDiagnosisData || collectDiagnosisData();
+          if (isAIStreaming) removeAIStreamListeners();
+          aiAnalysisStatus.style.display = 'block';
+          aiAnalysisResult.innerHTML = '';
+          aiAnalysisResult.style.whiteSpace = 'pre-wrap';
+          aiAnalysisResult.style.fontSize = '28px';
+          aiAnalysisResult.style.lineHeight = '1.8';
+          aiAnalyzeBtn.disabled = true;
+          aiAnalyzeBtn.innerHTML = `<i class="fas fa-spinner fa-pulse"></i> 分析中...`;
+          cancelAnalysisBtn.style.display = 'inline-flex';
+          isAIStreaming = true;
+          addDetailLog(`[AI流式分析] 开始分析诊断结果，故障码数量: ${diagnosisData.faultCodes.length}`);
+          window.electronAPI.removeAIStreamListeners();
+          window.electronAPI.onAIStreamData((chunk) => { if (chunk) { aiAnalysisResult.insertAdjacentText('beforeend', chunk); aiAnalysisResult.scrollTop = aiAnalysisResult.scrollHeight; } });
+          window.electronAPI.onAIStreamEnd(() => {
+            aiAnalysisStatus.style.display = 'none';
+            aiAnalyzeBtn.disabled = false;
+            aiAnalyzeBtn.classList.remove('pulse');
+            aiAnalyzeBtn.innerHTML = `<i class="fas fa-brain"></i> AI分析当前结果`;
+            cancelAnalysisBtn.style.display = 'none';
+            isAIStreaming = false;
+            addDetailLog(`[AI流式分析] 完成`);
+            contentPanels.forEach(p => p.classList.remove('active'));
+            document.getElementById('ai-diagnose-panel').classList.add('active');
+            menuBtns.forEach(b => b.classList.remove('active'));
+            document.querySelector('[data-target="ai-diagnose-panel"]').classList.add('active');
+          });
+          window.electronAPI.onAIStreamError((error) => {
+            aiAnalysisStatus.style.display = 'none';
+            aiAnalyzeBtn.disabled = false;
+            aiAnalyzeBtn.classList.remove('pulse');
+            aiAnalyzeBtn.innerHTML = `<i class="fas fa-brain"></i> AI分析当前结果`;
+            cancelAnalysisBtn.style.display = 'none';
+            isAIStreaming = false;
+            aiAnalysisResult.innerHTML = `<div style="text-align: center; color: #FFB5B5; padding: 60px 0;"><i class="fas fa-exclamation-triangle" style="font-size: 80px; margin-bottom: 20px;"></i><p style="font-size: 28px; margin-top: 20px;">AI流式分析失败</p><p style="font-size: 24px; color: var(--text-muted);">${error}</p></div>`;
+            addDetailLog(`[AI流式分析] 错误: ${error}`);
+          });
+          window.electronAPI.startAIStreamAnalysis(diagnosisData);
+        });
+
+        cancelAnalysisBtn.addEventListener('click', () => {
+          if (isAIStreaming) {
+            removeAIStreamListeners();
+            aiAnalysisStatus.style.display = 'none';
+            aiAnalyzeBtn.disabled = false;
+            aiAnalyzeBtn.classList.remove('pulse');
+            aiAnalyzeBtn.innerHTML = `<i class="fas fa-brain"></i> AI分析当前结果`;
+            cancelAnalysisBtn.style.display = 'none';
+            aiAnalysisResult.insertAdjacentText('beforeend', '\n\n[用户取消分析]');
+            addDetailLog(`[AI流式分析] 用户取消`);
+          }
+        });
+
+        // 清理监听器
+        window.addEventListener('beforeunload', () => {
+          if (window.electronAPI) {
+            window.electronAPI.removeAIStreamListeners?.();
+            window.electronAPI.removeChatStreamListeners?.();
+            window.electronAPI.removeVideoListeners?.();
+          }
+        });
+      }
+
+      // ========== AI对话功能实现 ==========
+      const chatMessages = document.getElementById('chatMessages');
+      const chatTextInput = document.getElementById('chatTextInput');
+      const sendChatBtn = document.getElementById('sendChatBtn');
+      const attachFileBtn = document.getElementById('attachFileBtn');
+      const chatFileInput = document.getElementById('chatFileInput');
+      const filePreviewArea = document.getElementById('filePreviewArea');
+      const previewThumb = document.getElementById('previewThumb');
+      const previewFileName = document.getElementById('previewFileName');
+      const clearFileBtn = document.getElementById('clearFileBtn');
+
+      let uploadedFile = null;
+      let isChatStreaming = false;
+      let messagesHistory = [];
+
+      function addChatMessage(text, sender, imageUrl = null) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `chat-message ${sender}`;
+        
+        const bubble = document.createElement('div');
+        bubble.className = 'message-bubble';
+        bubble.textContent = text;
+        msgDiv.appendChild(bubble);
+        
+        if (imageUrl) {
+          if (Array.isArray(imageUrl)) {
+            const grid = document.createElement('div');
+            grid.className = 'image-grid';
+            imageUrl.forEach(url => {
+              const img = document.createElement('img');
+              img.src = url;
+              img.className = 'message-image';
+              img.onclick = () => window.open(url, '_blank');
+              grid.appendChild(img);
+            });
+            msgDiv.appendChild(grid);
+          } else {
+            const img = document.createElement('img');
+            img.src = imageUrl;
+            img.className = 'message-image';
+            img.onclick = () => window.open(imageUrl, '_blank');
+            msgDiv.appendChild(img);
+          }
+        }
+        
+        const timestamp = document.createElement('div');
+        timestamp.className = 'message-timestamp';
+        timestamp.textContent = new Date().toLocaleTimeString();
+        msgDiv.appendChild(timestamp);
+        
+        chatMessages.appendChild(msgDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        
+        messagesHistory.push({
+          role: sender,
+          content: text,
+          imageUrl: imageUrl
+        });
+      }
+
+      function showFilePreview(file, previewUrl) {
+        previewThumb.src = previewUrl;
+        previewFileName.textContent = file.name;
+        filePreviewArea.style.display = 'flex';
+      }
+
+      function hideFilePreview() {
+        filePreviewArea.style.display = 'none';
+        previewThumb.src = '';
+        previewFileName.textContent = '';
+      }
+
+      attachFileBtn.addEventListener('click', () => chatFileInput.click());
+      
+      chatFileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        if (!file.type.startsWith('image/')) {
+          alert('请上传图片文件');
+          return;
+        }
+        
+        if (file.size > 10 * 1024 * 1024) {
+          alert('图片大小不能超过 10MB');
+          return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const base64 = event.target.result.split(',')[1];
+          const previewUrl = event.target.result;
+          
+          uploadedFile = {
+            name: file.name,
+            type: file.type,
+            data: base64,
+            preview: previewUrl
+          };
+          
+          showFilePreview(file, previewUrl);
+          addChatMessage(`[已选择图片: ${file.name}]`, 'user', previewUrl);
+        };
+        reader.readAsDataURL(file);
+      });
+
+      clearFileBtn.addEventListener('click', () => {
+        uploadedFile = null;
+        chatFileInput.value = '';
+        hideFilePreview();
+      });
+
+      // 修复输入框无法输入的bug
+      if (chatTextInput) {
+        chatTextInput.addEventListener('click', (e) => e.stopPropagation());
+        chatTextInput.addEventListener('mousedown', (e) => e.stopPropagation());
+        chatTextInput.addEventListener('keydown', (e) => e.stopPropagation());
+      }
+
+      function sendMessage() {
+        const text = chatTextInput.value.trim();
+        
+        if (isChatStreaming) {
+          addChatMessage('请等待上一条消息回复完成。', 'ai');
+          return;
+        }
+        
+        if (!text && !uploadedFile) return;
+
+        handleChatMessage(text);
+        chatTextInput.value = '';
+      }
+
+      function handleChatMessage(text) {
+        if (!window.electronAPI) {
+          addChatMessage('AI功能未就绪（缺少electronAPI）', 'ai');
+          return;
+        }
+
+        const messages = [];
+        const recentHistory = messagesHistory.slice(-10);
+        recentHistory.forEach(msg => {
+          if (msg.role === 'user') {
+            messages.push({ role: 'user', content: msg.content });
+          }
+        });
+        
+        if (text) {
+          messages.push({ role: 'user', content: text });
+        }
+
+        const placeholderDiv = document.createElement('div');
+        placeholderDiv.className = 'chat-message ai';
+        const placeholderBubble = document.createElement('div');
+        placeholderBubble.className = 'message-bubble';
+        placeholderBubble.textContent = '...';
+        placeholderDiv.appendChild(placeholderBubble);
+        const timestamp = document.createElement('div');
+        timestamp.className = 'message-timestamp';
+        timestamp.textContent = new Date().toLocaleTimeString();
+        placeholderDiv.appendChild(timestamp);
+        chatMessages.appendChild(placeholderDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        isChatStreaming = true;
+
+        const fileInfo = uploadedFile ? {
+          name: uploadedFile.name,
+          type: uploadedFile.type,
+          data: uploadedFile.data
+        } : null;
+        
+        uploadedFile = null;
+        chatFileInput.value = '';
+        hideFilePreview();
+
+        if (window.electronAPI.removeChatStreamListeners) {
+          window.electronAPI.removeChatStreamListeners();
+        }
+
+        window.electronAPI.onChatStreamData((chunk) => {
+          const lastMsg = chatMessages.lastElementChild;
+          if (lastMsg && lastMsg.classList.contains('ai')) {
+            const bubble = lastMsg.querySelector('.message-bubble');
+            if (bubble.textContent === '...') {
+              bubble.textContent = chunk;
+            } else {
+              bubble.textContent += chunk;
+            }
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+          }
+        });
+
+        window.electronAPI.onChatStreamEnd(() => {
+          isChatStreaming = false;
+          window.electronAPI.removeChatStreamListeners?.();
+        });
+
+        window.electronAPI.onChatStreamError((error) => {
+          const lastMsg = chatMessages.lastElementChild;
+          if (lastMsg && lastMsg.classList.contains('ai')) {
+            lastMsg.querySelector('.message-bubble').textContent = `[错误] ${error}`;
+          }
+          isChatStreaming = false;
+          window.electronAPI.removeChatStreamListeners?.();
+        });
+
+        window.electronAPI.sendChatMessage(messages, fileInfo);
+      }
+
+      // 视频生成按钮事件
+      createVideoBtn.addEventListener('click', () => {
+        if (!window.electronAPI) {
+          alert('电子API未就绪');
+          return;
+        }
+        
+        if (!doubao15VideoApiKey.value) {
+          alert('请先在 AI 配置中填写视频生成 API 密钥');
+          contentPanels.forEach(p => p.classList.remove('active'));
+          document.getElementById('ai-config-panel').classList.add('active');
+          menuBtns.forEach(b => b.classList.remove('active'));
+          document.querySelector('[data-target="ai-config-panel"]').classList.add('active');
+          return;
+        }
+        
+        const prompt = videoPrompt.value.trim();
+        
+        if (!prompt) {
+          alert('请输入视频描述');
+          return;
+        }
+        
+        const duration = parseInt(videoDuration.value) || 5;
+        const cameraFixed = videoCameraFixed.checked;
+        const watermark = videoWatermark.checked;
+        
+        videoTaskStatus.style.display = 'block';
+        videoStatusMessage.textContent = '正在创建视频任务...';
+        videoResult.style.display = 'none';
+        videoResult.innerHTML = '';
+        
+        if (window.electronAPI.removeVideoListeners) {
+          window.electronAPI.removeVideoListeners();
+        }
+        
+        window.electronAPI.onVideoStarted((data) => {
+          videoStatusMessage.textContent = data.message || '任务已提交';
+          addDetailLog(`[视频生成] ${data.message}`);
+        });
+        
+        window.electronAPI.onVideoTaskCreated((data) => {
+          videoStatusMessage.textContent = `任务ID: ${data.taskId}，正在生成...`;
+          addDetailLog(`[视频生成] 任务创建成功，ID: ${data.taskId}`);
+        });
+        
+        window.electronAPI.onVideoProgress((data) => {
+          videoStatusMessage.textContent = data.message || `生成中... ${data.progress || 0}%`;
+        });
+        
+        window.electronAPI.onVideoCompleted((data) => {
+          videoTaskStatus.style.display = 'none';
+          videoResult.style.display = 'block';
+          
+          const videoUrl = data.videoUrl;
+          
+          videoResult.innerHTML = `
+            <p style="color: #1E7A5C;">✅ 视频生成成功！</p>
+            <video controls style="width: 100%; border-radius: 4px;">
+              <source src="${videoUrl}" type="video/mp4">
+            </video>
+            <p style="margin-top: 10px;">
+              <a href="${videoUrl}" target="_blank" style="color: var(--doubao-video-accent);">下载视频</a>
+            </p>
+          `;
+          
+          addChatMessage('生成的视频：', 'ai', videoUrl);
+          addDetailLog(`[视频生成] 完成，URL: ${videoUrl}`);
+        });
+        
+        window.electronAPI.onVideoFailed((data) => {
+          videoTaskStatus.style.display = 'none';
+          videoResult.style.display = 'block';
+          videoResult.innerHTML = `<p style="color: #B33A3A;">❌ 生成失败: ${data.error || '未知错误'}</p>`;
+          addDetailLog(`[视频生成] 失败: ${data.error}`);
+        });
+        
+        window.electronAPI.onVideoError((error) => {
+          videoTaskStatus.style.display = 'none';
+          videoResult.style.display = 'block';
+          videoResult.innerHTML = `<p style="color: #B33A3A;">❌ 错误: ${error}</p>`;
+          addDetailLog(`[视频生成] 错误: ${error}`);
+        });
+        
+        // 创建图生视频任务，传递本地图片base64
+        window.electronAPI.generateVideo(prompt, {
+          imageData: selectedVideoImageBase64,
+          duration: duration,
+          cameraFixed: cameraFixed,
+          watermark: watermark
+        });
+      });
+
+      sendChatBtn.addEventListener('click', sendMessage);
+      chatTextInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendMessage();
+        }
+      });
+
+      // 初始化
+      addChatMessage('您好，我是 AI 助手。我可以：\n• 回答您的问题\n• 识别图片内容（上传图片即可）\n• 辅助分析主板诊断结果', 'ai');
+
+      window.addEventListener('beforeunload', () => {
+        if (window.electronAPI) {
+          window.electronAPI.removeChatStreamListeners?.();
+          window.electronAPI.removeVideoListeners?.();
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
