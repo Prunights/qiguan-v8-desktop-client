@@ -8,7 +8,7 @@
     "pack": "electron-builder"
   },
   "author": "八桂数维团队",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "electron-store": "^8.1.0",
     "iconv-lite": "^0.7.2",
