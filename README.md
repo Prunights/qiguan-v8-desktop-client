@@ -29,6 +29,8 @@
 - 💰 价格还不便宜（大几百块）
 
 比赛需要用到诊断卡的**诊断码读取功能**，但原厂软件的体验实在让人无法接受。于是我在比赛期间逆向分析了诊断卡的通信协议，用 Electron 重构了一个桌面客户端。
+<img width="1919" height="1052" alt="image" src="https://github.com/user-attachments/assets/e94f861f-eba3-4e81-9b04-4f5336610556" />
+<img width="1915" height="1051" alt="image" src="https://github.com/user-attachments/assets/b0c1c6ce-49e7-416b-91f8-31104dd150a0" />
 
 > ⚠️ **重要说明**：本项目是**非官方**客户端，需要配合**奇冠 V8 蓝牙主板诊断卡**硬件使用。如果您没有这张卡，程序可以运行但无法进行实际诊断（会显示模拟数据）。
 
