@@ -4,7 +4,7 @@
 
 ![Platform](https://img.shields.io/badge/platform-Windows-blue)
 ![Electron](https://img.shields.io/badge/Electron-25.9.8-brightgreen)
-![License](https://img.shields.io/badge/license-ISC-green)
+![License](https://img.shields.io/badge/license-MIT-green)
 ![Status](https://img.shields.io/badge/status-stable-orange)
 
 **奇冠 V8 主板诊断卡的非官方桌面客户端 | 技能大赛参赛作品**
