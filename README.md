@@ -7,6 +7,14 @@
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Status](https://img.shields.io/badge/status-stable-orange)
 
+### 🛠️ 技术栈 / Tech Stack
+
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?logo=css3&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)
+![Node.js](https://img.shields.io/badge/Node.js-339933?logo=nodedotjs&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)
+
 **奇冠 V8 主板诊断卡的非官方桌面客户端 | 技能大赛参赛作品**
 
 </div>
@@ -15,7 +23,7 @@
 
 这个项目的诞生源于一次技能大赛。比赛中需要使用一款**奇冠 V8** 品牌的主板诊断卡，但这张卡有几个问题：
 
-- 🔌 硬件做工粗糙，连外壳都没有
+- 🔌 硬件做工粗糙，裸露主板，连外壳都没有
 - 📱 配套的手机 APP 还是 Android 4/5 时代的产物
 - 🎨 UI 和交互逻辑极其简陋
 - 💰 价格还不便宜（大几百块）
@@ -180,8 +188,6 @@ computer-diagnostic-platform/
 2. 确认已开启"启用AI分析"开关
 3. 检查网络连接
 
-### Q7: 打包后图标不显示？
-**A:** 确保 `resources/icon_fixed.ico` 包含多尺寸（16x16, 32x32, 48x48, 256x256）
 
 ## ⚠️ 免责声明
 
