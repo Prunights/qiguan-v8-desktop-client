@@ -139,7 +139,7 @@
 
 ### 方式一：下载安装包（推荐）
 
-1. 前往 [Releases](https://github.com/Prunights/computer-diagnostic-platform/releases) 页面
+1. 前往 [Releases](https://github.com/Prunights/qiguan-v8-desktop-client/releases) 页面
 2. 下载最新版本安装程序
 3. 安装后运行，连接诊断卡即可使用
 
@@ -147,8 +147,8 @@
 
 ```bash
 # 克隆项目
-git clone https://github.com/Prunights/computer-diagnostic-platform.git
-cd computer-diagnostic-platform
+git clone https://github.com/Prunights/qiguan-v8-desktop-client.git
+cd qiguan-v8-desktop-client
 
 # 安装依赖
 npm install
@@ -184,7 +184,7 @@ npm run pack
 
 打包完成后，产物在 `release/` 目录：
 
-- `主板故障诊断平台 Setup 1.0.0.exe` - 安装程序
+- `qiguan-v8-desktop-client Setup 1.0.0.exe` - 安装程序
 - `win-unpacked/` - 免安装版文件夹
 
 ## 🤖 AI 功能配置
